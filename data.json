@@ -1,0 +1,48 @@
+{
+  "announcement": "Season 3 is here!",
+  "hosts": [
+    {
+      "name": "Colin",
+      "role": "Founder & Host",
+      "description": "The founder of BloxTalk, bringing the vision and energy behind the show."
+    },
+    {
+      "name": "Emily",
+      "role": "Host",
+      "description": "Part of the crew making every BloxTalk episode memorable."
+    },
+    {
+      "name": "Ryleigh",
+      "role": "Host",
+      "description": "Bringing a unique voice to the conversations and the fun."
+    },
+    {
+      "name": "Matt",
+      "role": "Host",
+      "description": "Rounding out the crew with even more personality."
+    }
+  ],
+  "production": [
+    {
+      "name": "Sl7shii",
+      "role": "Production Director",
+      "description": "Supporting the show behind the scenes."
+    }
+  ],
+  "episodes": [
+    {
+      "season": "3",
+      "number": "4",
+      "title": "Colin's Birthday Special \ud83c\udf82",
+      "date": "November 27, 2026",
+      "description": "Celebrate BloxTalk founder Colin's birthday with the crew."
+    }
+  ],
+  "events": [
+    {
+      "title": "Colin's Birthday Celebration",
+      "date": "November 27, 2026",
+      "description": "Join the hosts for a birthday special."
+    }
+  ]
+}
