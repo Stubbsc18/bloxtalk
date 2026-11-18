@@ -135,12 +135,12 @@
   document.getElementById("loginButton").onclick = async () => {
     status.textContent = "Redirecting to Discord...";
 
-    const { error } = await client.auth.signInWithOAuth({
-      provider: "discord",
-      options: {
-         "https://stubbsc18.github.io/bloxtalk/staff.html"
-      }
-    });
+const { error } = await client.auth.signInWithOAuth({
+  provider: "discord",
+  options: {
+    redirectTo: "https://stubbsc18.github.io/bloxtalk/staff.html"
+  }
+});
 
     if (error) status.textContent = error.message;
   };
