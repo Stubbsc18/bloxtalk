@@ -2,119 +2,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BloxTalk | Staff Administration</title>
-  <style>
-    :root{color-scheme:dark;font-family:Arial,Helvetica,sans-serif}
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(135deg,#090d27,#201247);color:#f6f5ff;min-height:100vh}
-    header{background:#0d1033;border-bottom:1px solid #454273;padding:20px max(20px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;gap:15px;align-items:center}
-    a{color:#c9a5ff}
-    main{max-width:1100px;margin:35px auto;padding:0 20px}
-    h1{margin-bottom:6px}
-    h2{margin-top:0}
-    .muted{color:#c5c4db}
-    .panel{background:#1b2044;border:1px solid #444879;border-radius:15px;padding:22px;margin:20px 0}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
-    .grid .panel{margin:0}
-    label{display:block;margin:12px 0 5px;font-weight:600}
-    input,select,textarea{width:100%;padding:11px;background:#0e1537;border:1px solid #666a9d;border-radius:7px;color:#fff;font:inherit}
-    textarea{min-height:76px}
-    button{background:#6267f5;color:white;border:0;border-radius:8px;padding:11px 17px;font-weight:bold;cursor:pointer;margin-top:15px}
-    button:hover{background:#777aff}
-    button:disabled{opacity:.55;cursor:wait}
-    .hidden{display:none!important}
-    .record{border-top:1px solid #42466e;padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-    .status{padding:12px 16px;border:1px solid #6267a5;border-radius:8px;margin:15px 0}
-    .error{border-color:#f48a94;color:#ffc8cf}
-    small{color:#c5c4db}
-    strong{color:#fff}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BloxTalk | Staff Administration</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#090d27,#201247);color:#f6f5ff;min-height:100vh}
+header{background:#0d1033;border-bottom:1px solid #454273;padding:20px max(20px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;gap:15px;align-items:center}
+a{color:#c9a5ff}
+main{max-width:1100px;margin:35px auto;padding:0 20px}
+h1{margin-bottom:6px}h2{margin-top:0}
+.muted{color:#c5c4db}
+.panel{background:#1b2044;border:1px solid #444879;border-radius:15px;padding:22px;margin:20px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.grid .panel{margin:0}
+label{display:block;margin:12px 0 5px;font-weight:600}
+input,select,textarea{width:100%;padding:11px;background:#0e1537;border:1px solid #666a9d;border-radius:7px;color:#fff;font:inherit}
+textarea{min-height:76px}
+button{background:#6267f5;color:white;border:0;border-radius:8px;padding:11px 17px;font-weight:bold;cursor:pointer;margin-top:15px}
+button:hover{background:#777aff}
+button:disabled{opacity:.55;cursor:wait}
+button.delete{background:#a6324b}
+button.delete:hover{background:#c13d58}
+.hidden{display:none!important}
+.record{border-top:1px solid #42466e;padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.status{padding:12px 16px;border:1px solid #6267a5;border-radius:8px;margin:15px 0}
+.error{border-color:#f48a94;color:#ffc8cf}
+small{color:#c5c4db}strong{color:#fff}
+</style>
 </head>
 <body>
 <header>
-  <strong>BLOX<span style="color:#c48aff">TALK</span> | ADMINISTRATION</strong>
-  <a href="staff.html">Back to Staff Portal</a>
+<strong>BLOX<span style="color:#c48aff">TALK</span> | ADMINISTRATION</strong>
+<a href="staff.html">Back to Staff Portal</a>
 </header>
+
 <main>
-  <h1>Staff Management</h1>
-  <p class="muted">Schedules, disciplinary actions, leave requests, and staff directory.</p>
+<h1>Staff Management</h1>
+<p class="muted">Schedules, disciplinary actions, leave requests, and staff directory.</p>
 
-  <div id="status" class="status">Checking Discord sign-in and administrator access…</div>
+<div id="status" class="status">Checking Discord sign-in and administrator access…</div>
 
-  <div id="dashboard" class="hidden">
-    <div class="panel">
-      <h2>Staff Directory</h2>
-      <p class="muted">Select a registered staff member for a new record.</p>
-      <div id="staffList">Loading…</div>
-    </div>
-
-    <div class="grid">
-      <section class="panel">
-        <h2>Assign Show Schedule</h2>
-        <form id="scheduleForm">
-          <label for="scheduleStaff">Staff member</label>
-          <select id="scheduleStaff" required></select>
-
-          <label for="showTitle">Show title</label>
-          <input id="showTitle" required maxlength="150" placeholder="Season 3 Episode 4">
-
-          <label for="position">Assigned position</label>
-          <input id="position" required maxlength="120" placeholder="Host / Camera / Producer">
-
-          <label for="startsAt">Start date and time</label>
-          <input id="startsAt" type="datetime-local" required>
-
-          <label for="endsAt">End date and time</label>
-          <input id="endsAt" type="datetime-local" required>
-
-          <label for="scheduleNotes">Notes</label>
-          <textarea id="scheduleNotes"></textarea>
-
-          <button type="submit">Assign Schedule</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>Issue Disciplinary Action</h2>
-        <form id="disciplineForm">
-          <label for="disciplineStaff">Staff member</label>
-          <select id="disciplineStaff" required></select>
-
-          <label for="actionType">Action</label>
-          <select id="actionType" required>
-            <option value="warning">Verbal Warning</option>
-            <option value="warning">Written Warning</option>
-            <option value="strike">Strike</option>
-            <option value="suspension">Suspension</option>
-            <option value="termination">Termination</option>
-          </select>
-
-          <label for="disciplineReason">Reason</label>
-          <textarea id="disciplineReason" required placeholder="Document the incident and relevant policy"></textarea>
-
-          <button type="submit">Issue Action</button>
-        </form>
-      </section>
-
-      <section class="panel">
-        <h2>LOA Requests</h2>
-        <p class="muted">Approve or deny submitted leave requests.</p>
-        <button id="refreshLoas" type="button">Refresh Requests</button>
-        <div id="loaList">Loading…</div>
-      </section>
-
-      <section class="panel">
-        <h2>Recent Schedules & Actions</h2>
-        <button id="refreshRecords" type="button">Refresh Records</button>
-        <h3>Schedules</h3>
-        <div id="scheduleList">Loading…</div>
-        <h3>Disciplinary Actions</h3>
-        <div id="disciplineList">Loading…</div>
-      </section>
-    </div>
+<div id="dashboard" class="hidden">
+  <div class="panel">
+    <h2>Staff Directory</h2>
+    <p class="muted">Select a registered staff member for a new record.</p>
+    <div id="staffList">Loading…</div>
   </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Assign Show Schedule</h2>
+      <form id="scheduleForm">
+        <label for="scheduleStaff">Staff member</label>
+        <select id="scheduleStaff" required></select>
+
+        <label for="showTitle">Show title</label>
+        <input id="showTitle" required maxlength="150" placeholder="Season 3 Episode 4">
+
+        <label for="position">Assigned position</label>
+        <input id="position" required maxlength="120" placeholder="Host / Camera / Producer">
+
+        <label for="startsAt">Start date and time</label>
+        <input id="startsAt" type="datetime-local" required>
+
+        <label for="endsAt">End date and time</label>
+        <input id="endsAt" type="datetime-local" required>
+
+        <label for="scheduleNotes">Notes</label>
+        <textarea id="scheduleNotes"></textarea>
+
+        <button type="submit">Assign Schedule</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Issue Disciplinary Action</h2>
+      <form id="disciplineForm">
+        <label for="disciplineStaff">Staff member</label>
+        <select id="disciplineStaff" required></select>
+
+        <label for="actionType">Action</label>
+        <select id="actionType" required>
+          <option value="warning">Verbal Warning</option>
+          <option value="warning">Written Warning</option>
+          <option value="strike">Strike</option>
+          <option value="suspension">Suspension</option>
+          <option value="termination">Termination</option>
+        </select>
+
+        <label for="disciplineReason">Reason</label>
+        <textarea id="disciplineReason" required placeholder="Document the incident and relevant policy"></textarea>
+
+        <button type="submit">Issue Action</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>LOA Requests</h2>
+      <p class="muted">Approve or deny submitted leave requests.</p>
+      <button id="refreshLoas" type="button">Refresh Requests</button>
+      <div id="loaList">Loading…</div>
+    </section>
+
+    <section class="panel">
+      <h2>Recent Schedules & Actions</h2>
+      <button id="refreshRecords" type="button">Refresh Records</button>
+
+      <h3>Schedules</h3>
+      <div id="scheduleList">Loading…</div>
+
+      <h3>Disciplinary Actions</h3>
+      <p class="muted">Administrators can remove disciplinary actions below.</p>
+      <div id="disciplineList">Loading…</div>
+    </section>
+  </div>
+</div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -264,9 +268,9 @@
   $('disciplineForm').addEventListener('submit', async event => {
     event.preventDefault();
 
-    if (!confirm(
-      'Issue this disciplinary action? It will become part of the staff member’s record.'
-    )) return;
+    if (!confirm('Issue this disciplinary action? It will become part of the staff member’s record.')) {
+      return;
+    }
 
     await save('staff_discipline', {
       staff_id: $('disciplineStaff').value,
@@ -314,9 +318,9 @@
         button.style.marginRight = '8px';
 
         button.addEventListener('click', async () => {
-          if (!confirm(
-            `${decision} leave request for ${nameOf(r.staff_id)}?`
-          )) return;
+          if (!confirm(`${decision} leave request for ${nameOf(r.staff_id)}?`)) {
+            return;
+          }
 
           button.disabled = true;
 
@@ -343,6 +347,46 @@
     });
   }
 
+  async function removeDiscipline(record, button) {
+    const staffName = nameOf(record.staff_id);
+
+    const confirmed = confirm(
+      `Permanently remove this disciplinary action?\n\n` +
+      `Staff: ${staffName}\n` +
+      `Action: ${record.action_type}\n` +
+      `Reason: ${record.reason}\n\n` +
+      `This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+
+    try {
+      const { data, error } = await client
+        .from('staff_discipline')
+        .delete()
+        .eq('id', record.id)
+        .select('id');
+
+      if (error) throw error;
+
+      if (!data || data.length !== 1) {
+        throw new Error(
+          'No disciplinary record was deleted. Check your administrator permissions and Supabase RLS policies.'
+        );
+      }
+
+      await loadRecords();
+      setStatus(`Disciplinary action removed for ${staffName}.`);
+
+    } catch (error) {
+      showError(error);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function loadRecords() {
     const [schedules, discipline] = await Promise.all([
       client
@@ -353,7 +397,7 @@
 
       client
         .from('staff_discipline')
-        .select('staff_id,action_type,reason,issued_at,appeal_status')
+        .select('id,staff_id,action_type,reason,issued_at,appeal_status')
         .order('issued_at', { ascending: false })
         .limit(50)
     ]);
@@ -371,7 +415,9 @@
     } else {
       schedules.data.forEach(r => appendLine(
         s,
-        `${nameOf(r.staff_id)} | ${r.show_title} — ${r.position}\n${new Date(r.starts_at).toLocaleString()} to ${new Date(r.ends_at).toLocaleString()}${r.notes ? '\n' + r.notes : ''}`
+        `${nameOf(r.staff_id)} | ${r.show_title} — ${r.position}\n` +
+        `${new Date(r.starts_at).toLocaleString()} to ${new Date(r.ends_at).toLocaleString()}` +
+        `${r.notes ? '\n' + r.notes : ''}`
       ));
     }
 
@@ -380,10 +426,24 @@
     } else if (!discipline.data?.length) {
       appendLine(d, 'No disciplinary actions found.');
     } else {
-      discipline.data.forEach(r => appendLine(
-        d,
-        `${nameOf(r.staff_id)} | ${r.action_type} | ${new Date(r.issued_at).toLocaleDateString()}\n${r.reason}\nAppeal: ${r.appeal_status || 'N/A'}`
-      ));
+      discipline.data.forEach(r => {
+        const record = appendLine(
+          d,
+          `${nameOf(r.staff_id)} | ${r.action_type} | ${new Date(r.issued_at).toLocaleDateString()}\n` +
+          `${r.reason}\nAppeal: ${r.appeal_status || 'N/A'}\n`
+        );
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'delete';
+        removeButton.textContent = 'Remove Discipline';
+
+        removeButton.addEventListener('click', () => {
+          removeDiscipline(r, removeButton);
+        });
+
+        record.appendChild(removeButton);
+      });
     }
   }
 
