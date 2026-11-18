@@ -165,10 +165,42 @@
   document.getElementById("userInfo").textContent =
     "Signed in as " + name;
 
-  document.getElementById("accessMessage").textContent =
-    "Discord login successful. Staff access is not yet configured.";
+ 
+  const accessMessage = document.getElementById("accessMessage");
+  const staffFeatures = document.getElementById("staffFeatures");
 
-  // Staff records stay hidden until database authorization is added.
+  const { data: profile, error: profileError } = await client
+    .from("staff_profiles")
+    .select("display_name, position, role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    accessMessage.textContent =
+      "Unable to verify staff access: " + profileError.message;
+  } else if (!profile) {
+    accessMessage.textContent =
+      "Access Denied: Your Discord account is not registered as BloxTalk staff.";
+  } else {
+    accessMessage.textContent =
+      "Welcome, " + profile.display_name +
+      " | " + (profile.position || "Staff") +
+      " | " + profile.role.toUpperCase();
+
+    staffFeatures.classList.remove("hidden");
+
+    if (profile.role === "admin") {
+      const adminCard = document.createElement("div");
+      adminCard.className = "card";
+      adminCard.innerHTML = `
+        <h2>🛡️ Administration</h2>
+        <p>Administrator access verified.</p>
+        <p>Staff management tools are being configured.</p>
+      `;
+      staffFeatures.appendChild(adminCard);
+    }
+  }
+
 })();
 </script>
 
