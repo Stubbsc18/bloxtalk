@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,177 +7,391 @@
   <title>BloxTalk | Staff Administration</title>
   <style>
     :root{color-scheme:dark;font-family:Arial,Helvetica,sans-serif}
-    *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#090d27,#201247);color:#f6f5ff;min-height:100vh}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(135deg,#090d27,#201247);color:#f6f5ff;min-height:100vh}
     header{background:#0d1033;border-bottom:1px solid #454273;padding:20px max(20px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;gap:15px;align-items:center}
-    a{color:#c9a5ff}main{max-width:1100px;margin:35px auto;padding:0 20px}h1{margin-bottom:6px}h2{margin-top:0}
-    .muted{color:#c5c4db}.panel{background:#1b2044;border:1px solid #444879;border-radius:15px;padding:22px;margin:20px 0}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.grid .panel{margin:0}
-    label{display:block;margin:12px 0 5px;font-weight:600}input,select,textarea{width:100%;padding:11px;background:#0e1537;border:1px solid #666a9d;border-radius:7px;color:#fff;font:inherit}
-    textarea{min-height:76px}button{background:#6267f5;color:white;border:0;border-radius:8px;padding:11px 17px;font-weight:bold;cursor:pointer;margin-top:15px}
-    button:hover{background:#777aff}button:disabled{opacity:.55;cursor:wait}.hidden{display:none!important}
+    a{color:#c9a5ff}
+    main{max-width:1100px;margin:35px auto;padding:0 20px}
+    h1{margin-bottom:6px}
+    h2{margin-top:0}
+    .muted{color:#c5c4db}
+    .panel{background:#1b2044;border:1px solid #444879;border-radius:15px;padding:22px;margin:20px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+    .grid .panel{margin:0}
+    label{display:block;margin:12px 0 5px;font-weight:600}
+    input,select,textarea{width:100%;padding:11px;background:#0e1537;border:1px solid #666a9d;border-radius:7px;color:#fff;font:inherit}
+    textarea{min-height:76px}
+    button{background:#6267f5;color:white;border:0;border-radius:8px;padding:11px 17px;font-weight:bold;cursor:pointer;margin-top:15px}
+    button:hover{background:#777aff}
+    button:disabled{opacity:.55;cursor:wait}
+    .hidden{display:none!important}
     .record{border-top:1px solid #42466e;padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-    .status{padding:12px 16px;border:1px solid #6267a5;border-radius:8px;margin:15px 0}.error{border-color:#f48a94;color:#ffc8cf}
-    small{color:#c5c4db}strong{color:#fff}
+    .status{padding:12px 16px;border:1px solid #6267a5;border-radius:8px;margin:15px 0}
+    .error{border-color:#f48a94;color:#ffc8cf}
+    small{color:#c5c4db}
+    strong{color:#fff}
   </style>
 </head>
 <body>
-<header><strong>BLOX<span style="color:#c48aff">TALK</span> | ADMINISTRATION</strong><a href="staff.html">Back to Staff Portal</a></header>
+<header>
+  <strong>BLOX<span style="color:#c48aff">TALK</span> | ADMINISTRATION</strong>
+  <a href="staff.html">Back to Staff Portal</a>
+</header>
 <main>
-  <h1>Staff Management</h1><p class="muted">Schedules, disciplinary actions, leave requests, and staff directory.</p>
+  <h1>Staff Management</h1>
+  <p class="muted">Schedules, disciplinary actions, leave requests, and staff directory.</p>
+
   <div id="status" class="status">Checking Discord sign-in and administrator access…</div>
+
   <div id="dashboard" class="hidden">
-    <div class="panel"><h2>Staff Directory</h2><p class="muted">Select a registered staff member for a new record.</p><div id="staffList">Loading…</div></div>
+    <div class="panel">
+      <h2>Staff Directory</h2>
+      <p class="muted">Select a registered staff member for a new record.</p>
+      <div id="staffList">Loading…</div>
+    </div>
+
     <div class="grid">
       <section class="panel">
         <h2>Assign Show Schedule</h2>
         <form id="scheduleForm">
-          <label for="scheduleStaff">Staff member</label><select id="scheduleStaff" required></select>
-          <label for="showTitle">Show title</label><input id="showTitle" required maxlength="150" placeholder="Season 3 Episode 4">
-          <label for="position">Assigned position</label><input id="position" required maxlength="120" placeholder="Host / Camera / Producer">
-          <label for="startsAt">Start date and time</label><input id="startsAt" type="datetime-local" required>
-          <label for="endsAt">End date and time</label><input id="endsAt" type="datetime-local" required>
-          <label for="scheduleNotes">Notes</label><textarea id="scheduleNotes"></textarea>
+          <label for="scheduleStaff">Staff member</label>
+          <select id="scheduleStaff" required></select>
+
+          <label for="showTitle">Show title</label>
+          <input id="showTitle" required maxlength="150" placeholder="Season 3 Episode 4">
+
+          <label for="position">Assigned position</label>
+          <input id="position" required maxlength="120" placeholder="Host / Camera / Producer">
+
+          <label for="startsAt">Start date and time</label>
+          <input id="startsAt" type="datetime-local" required>
+
+          <label for="endsAt">End date and time</label>
+          <input id="endsAt" type="datetime-local" required>
+
+          <label for="scheduleNotes">Notes</label>
+          <textarea id="scheduleNotes"></textarea>
+
           <button type="submit">Assign Schedule</button>
         </form>
       </section>
+
       <section class="panel">
         <h2>Issue Disciplinary Action</h2>
         <form id="disciplineForm">
-          <label for="disciplineStaff">Staff member</label><select id="disciplineStaff" required></select>
-          <label for="actionType">Action</label><select id="actionType" required><option>Verbal Warning</option><option>Written Warning</option><option>Strike</option><option>Suspension</option><option>Termination</option></select>
-          <label for="disciplineReason">Reason</label><textarea id="disciplineReason" required placeholder="Document the incident and relevant policy"></textarea>
+          <label for="disciplineStaff">Staff member</label>
+          <select id="disciplineStaff" required></select>
+
+          <label for="actionType">Action</label>
+          <select id="actionType" required>
+            <option value="warning">Verbal Warning</option>
+            <option value="warning">Written Warning</option>
+            <option value="strike">Strike</option>
+            <option value="suspension">Suspension</option>
+            <option value="termination">Termination</option>
+          </select>
+
+          <label for="disciplineReason">Reason</label>
+          <textarea id="disciplineReason" required placeholder="Document the incident and relevant policy"></textarea>
+
           <button type="submit">Issue Action</button>
         </form>
       </section>
+
       <section class="panel">
         <h2>LOA Requests</h2>
         <p class="muted">Approve or deny submitted leave requests.</p>
         <button id="refreshLoas" type="button">Refresh Requests</button>
         <div id="loaList">Loading…</div>
       </section>
+
       <section class="panel">
         <h2>Recent Schedules & Actions</h2>
         <button id="refreshRecords" type="button">Refresh Records</button>
-        <h3>Schedules</h3><div id="scheduleList">Loading…</div>
-        <h3>Disciplinary Actions</h3><div id="disciplineList">Loading…</div>
+        <h3>Schedules</h3>
+        <div id="scheduleList">Loading…</div>
+        <h3>Disciplinary Actions</h3>
+        <div id="disciplineList">Loading…</div>
       </section>
     </div>
   </div>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-config.js"></script>
 <script>
 (async () => {
   'use strict';
+
   const $ = id => document.getElementById(id);
   const status = $('status');
-  const setStatus = (message, error = false) => { status.textContent = message; status.classList.toggle('error', error); };
+
+  const setStatus = (message, error = false) => {
+    status.textContent = message;
+    status.classList.toggle('error', error);
+  };
+
   const url = window.BLOXTALK_SUPABASE_URL;
   const key = window.BLOXTALK_SUPABASE_ANON_KEY;
+
   if (!window.supabase || !url || !key || url.includes('YOUR-PROJECT')) {
-    setStatus('Supabase is not configured. Check supabase-config.js.', true); return;
+    setStatus('Supabase is not configured. Check supabase-config.js.', true);
+    return;
   }
+
   const client = window.supabase.createClient(url, key);
+
   const { data: { user }, error: authError } = await client.auth.getUser();
-  if (authError || !user) { setStatus('Please sign in through the Staff Portal first.', true); return; }
-  const { data: profile, error: profileError } = await client.from('staff_profiles')
-    .select('user_id, display_name, position, role').eq('user_id', user.id).maybeSingle();
-  if (profileError || !profile || profile.role !== 'admin') {
-    setStatus('Access denied. Your account is not registered as a BloxTalk administrator.', true); return;
+
+  if (authError || !user) {
+    setStatus('Please sign in through the Staff Portal first.', true);
+    return;
   }
+
+  const { data: profile, error: profileError } = await client
+    .from('staff_profiles')
+    .select('user_id, display_name, position, role')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (profileError || !profile || profile.role !== 'admin') {
+    setStatus('Access denied. Your account is not registered as a BloxTalk administrator.', true);
+    return;
+  }
+
   $('dashboard').classList.remove('hidden');
   setStatus('Administrator access verified: ' + (profile.display_name || 'Administrator'));
+
   let staff = [];
-  const nameOf = id => staff.find(p => p.user_id === id)?.display_name || id;
-  const showError = error => setStatus(error?.message || String(error), true);
+
+  const nameOf = id =>
+    staff.find(p => p.user_id === id)?.display_name || id;
+
+  const showError = error =>
+    setStatus(error?.message || String(error), true);
+
   const appendLine = (target, text) => {
-    const div = document.createElement('div'); div.className = 'record'; div.textContent = text; target.appendChild(div); return div;
+    const div = document.createElement('div');
+    div.className = 'record';
+    div.textContent = text;
+    target.appendChild(div);
+    return div;
   };
-  const empty = (target, message) => { target.replaceChildren(); appendLine(target, message); };
+
+  const empty = (target, message) => {
+    target.replaceChildren();
+    appendLine(target, message);
+  };
+
   async function loadStaff() {
-    const { data, error } = await client.from('staff_profiles')
-      .select('user_id, display_name, position, role').order('display_name');
-    if (error) { showError(error); return; }
+    const { data, error } = await client
+      .from('staff_profiles')
+      .select('user_id, display_name, position, role')
+      .order('display_name');
+
+    if (error) {
+      showError(error);
+      return;
+    }
+
     staff = data || [];
     $('staffList').replaceChildren();
-    if (!staff.length) appendLine($('staffList'), 'No staff registered.');
-    staff.forEach(p => appendLine($('staffList'), `${p.display_name || 'Unnamed'} — ${p.position || 'Staff'} (${p.role || 'staff'})`));
+
+    if (!staff.length) {
+      appendLine($('staffList'), 'No staff registered.');
+    }
+
+    staff.forEach(p => appendLine(
+      $('staffList'),
+      `${p.display_name || 'Unnamed'} — ${p.position || 'Staff'} (${p.role || 'staff'})`
+    ));
+
     for (const id of ['scheduleStaff', 'disciplineStaff']) {
-      const select = $(id); select.replaceChildren();
-      const placeholder = new Option('Select staff member', ''); select.add(placeholder);
-      staff.forEach(p => select.add(new Option(`${p.display_name || 'Unnamed'} — ${p.position || 'Staff'}`, p.user_id)));
+      const select = $(id);
+      select.replaceChildren();
+      select.add(new Option('Select staff member', ''));
+
+      staff.forEach(p => select.add(
+        new Option(
+          `${p.display_name || 'Unnamed'} — ${p.position || 'Staff'}`,
+          p.user_id
+        )
+      ));
     }
   }
+
   async function save(table, values, form) {
-    const button = form.querySelector('button[type=submit]'); button.disabled = true;
+    const button = form.querySelector('button[type=submit]');
+    button.disabled = true;
+
     try {
       const { error } = await client.from(table).insert(values);
+
       if (error) throw error;
-      setStatus('Record saved successfully.'); form.reset(); await loadRecords();
-    } catch (error) { showError(error); } finally { button.disabled = false; }
+
+      setStatus('Record saved successfully.');
+      form.reset();
+      await loadRecords();
+
+    } catch (error) {
+      showError(error);
+    } finally {
+      button.disabled = false;
+    }
   }
+
   $('scheduleForm').addEventListener('submit', async event => {
     event.preventDefault();
-    const start = new Date($('startsAt').value), end = new Date($('endsAt').value);
-    if (!(end > start)) { setStatus('End time must be after start time.', true); return; }
+
+    const start = new Date($('startsAt').value);
+    const end = new Date($('endsAt').value);
+
+    if (!(end > start)) {
+      setStatus('End time must be after start time.', true);
+      return;
+    }
+
     await save('staff_schedules', {
-      staff_id: $('scheduleStaff').value, show_title: $('showTitle').value.trim(),
-      position: $('position').value.trim(), starts_at: start.toISOString(),
-      ends_at: end.toISOString(), notes: $('scheduleNotes').value.trim()
+      staff_id: $('scheduleStaff').value,
+      show_title: $('showTitle').value.trim(),
+      position: $('position').value.trim(),
+      starts_at: start.toISOString(),
+      ends_at: end.toISOString(),
+      notes: $('scheduleNotes').value.trim()
     }, event.currentTarget);
   });
+
   $('disciplineForm').addEventListener('submit', async event => {
     event.preventDefault();
-    if (!confirm('Issue this disciplinary action? It will become part of the staff member’s record.')) return;
+
+    if (!confirm(
+      'Issue this disciplinary action? It will become part of the staff member’s record.'
+    )) return;
+
     await save('staff_discipline', {
-      staff_id: $('disciplineStaff').value, action_type: $('actionType').value,
-      reason: $('disciplineReason').value.trim(), issued_by: user.id,
-      issued_at: new Date().toISOString(), appeal_status: 'Not Appealed'
+      staff_id: $('disciplineStaff').value,
+      action_type: $('actionType').value,
+      reason: $('disciplineReason').value.trim(),
+      issued_by: user.id,
+      issued_at: new Date().toISOString(),
+      appeal_status: 'none'
     }, event.currentTarget);
   });
+
   async function loadLoas() {
-    const list = $('loaList'); list.textContent = 'Loading…';
-    const { data, error } = await client.from('staff_loas')
+    const list = $('loaList');
+    list.textContent = 'Loading…';
+
+    const { data, error } = await client
+      .from('staff_loas')
       .select('id,staff_id,start_date,end_date,reason,status,created_at')
-      .order('created_at', { ascending: false }).limit(100);
-    if (error) { empty(list, 'Unable to load LOAs: ' + error.message); return; }
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) {
+      empty(list, 'Unable to load LOAs: ' + error.message);
+      return;
+    }
+
     list.replaceChildren();
-    if (!data?.length) { appendLine(list, 'No leave requests found.'); return; }
+
+    if (!data?.length) {
+      appendLine(list, 'No leave requests found.');
+      return;
+    }
+
     data.forEach(r => {
-      const div = appendLine(list, `${nameOf(r.staff_id)} | ${r.start_date} to ${r.end_date}\n${r.reason || 'No reason given'}\nStatus: ${r.status || 'Pending'}`);
+      const div = appendLine(
+        list,
+        `${nameOf(r.staff_id)} | ${r.start_date} to ${r.end_date}\n${r.reason || 'No reason given'}\nStatus: ${r.status || 'Pending'}`
+      );
+
       if ((r.status || 'pending').toLowerCase() !== 'pending') return;
+
       for (const decision of ['Approved', 'Denied']) {
-        const button = document.createElement('button'); button.textContent = decision;
+        const button = document.createElement('button');
+        button.textContent = decision;
         button.style.marginRight = '8px';
+
         button.addEventListener('click', async () => {
-          if (!confirm(`${decision} leave request for ${nameOf(r.staff_id)}?`)) return;
+          if (!confirm(
+            `${decision} leave request for ${nameOf(r.staff_id)}?`
+          )) return;
+
           button.disabled = true;
-          const { error: updateError } = await client.from('staff_loas')
-            .update({ status: decision, reviewed_by: user.id }).eq('id', r.id);
-          if (updateError) showError(updateError);
-          else { setStatus('LOA ' + decision.toLowerCase() + '.'); await loadLoas(); }
+
+          const { error: updateError } = await client
+            .from('staff_loas')
+            .update({
+              status: decision.toLowerCase(),
+              reviewed_by: user.id
+            })
+            .eq('id', r.id);
+
+          if (updateError) {
+            showError(updateError);
+          } else {
+            setStatus('LOA ' + decision.toLowerCase() + '.');
+            await loadLoas();
+          }
+
           button.disabled = false;
         });
+
         div.appendChild(button);
       }
     });
   }
+
   async function loadRecords() {
     const [schedules, discipline] = await Promise.all([
-      client.from('staff_schedules').select('staff_id,show_title,position,starts_at,ends_at,notes').order('starts_at', { ascending: false }).limit(50),
-      client.from('staff_discipline').select('staff_id,action_type,reason,issued_at,appeal_status').order('issued_at', { ascending: false }).limit(50)
+      client
+        .from('staff_schedules')
+        .select('staff_id,show_title,position,starts_at,ends_at,notes')
+        .order('starts_at', { ascending: false })
+        .limit(50),
+
+      client
+        .from('staff_discipline')
+        .select('staff_id,action_type,reason,issued_at,appeal_status')
+        .order('issued_at', { ascending: false })
+        .limit(50)
     ]);
-    const s = $('scheduleList'), d = $('disciplineList'); s.replaceChildren(); d.replaceChildren();
-    if (schedules.error) appendLine(s, schedules.error.message);
-    else if (!schedules.data?.length) appendLine(s, 'No schedules found.');
-    else schedules.data.forEach(r => appendLine(s, `${nameOf(r.staff_id)} | ${r.show_title} — ${r.position}\n${new Date(r.starts_at).toLocaleString()} to ${new Date(r.ends_at).toLocaleString()}${r.notes ? '\n' + r.notes : ''}`));
-    if (discipline.error) appendLine(d, discipline.error.message);
-    else if (!discipline.data?.length) appendLine(d, 'No disciplinary actions found.');
-    else discipline.data.forEach(r => appendLine(d, `${nameOf(r.staff_id)} | ${r.action_type} | ${new Date(r.issued_at).toLocaleDateString()}\n${r.reason}\nAppeal: ${r.appeal_status || 'N/A'}`));
+
+    const s = $('scheduleList');
+    const d = $('disciplineList');
+
+    s.replaceChildren();
+    d.replaceChildren();
+
+    if (schedules.error) {
+      appendLine(s, schedules.error.message);
+    } else if (!schedules.data?.length) {
+      appendLine(s, 'No schedules found.');
+    } else {
+      schedules.data.forEach(r => appendLine(
+        s,
+        `${nameOf(r.staff_id)} | ${r.show_title} — ${r.position}\n${new Date(r.starts_at).toLocaleString()} to ${new Date(r.ends_at).toLocaleString()}${r.notes ? '\n' + r.notes : ''}`
+      ));
+    }
+
+    if (discipline.error) {
+      appendLine(d, discipline.error.message);
+    } else if (!discipline.data?.length) {
+      appendLine(d, 'No disciplinary actions found.');
+    } else {
+      discipline.data.forEach(r => appendLine(
+        d,
+        `${nameOf(r.staff_id)} | ${r.action_type} | ${new Date(r.issued_at).toLocaleDateString()}\n${r.reason}\nAppeal: ${r.appeal_status || 'N/A'}`
+      ));
+    }
   }
+
   $('refreshLoas').addEventListener('click', loadLoas);
   $('refreshRecords').addEventListener('click', loadRecords);
-  await loadStaff(); await Promise.all([loadLoas(), loadRecords()]);
+
+  await loadStaff();
+  await Promise.all([loadLoas(), loadRecords()]);
 })();
 </script>
 </body>
