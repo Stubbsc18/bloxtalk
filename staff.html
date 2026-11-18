@@ -205,6 +205,9 @@
 <button id="openStaffAdmin" type="button">Open Staff Management</button>
       `;
       staffFeatures.appendChild(adminCard);
+      document.getElementById("openStaffAdmin").addEventListener("click", () => {
+  window.location.href = "staff-admin.html";
+});
     }
     
     // Load records belonging to the signed-in staff member.
