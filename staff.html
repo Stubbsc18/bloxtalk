@@ -92,16 +92,22 @@
     <div id="staffFeatures" class="grid hidden">
       <div class="card">
         <h2>📅 My Schedule</h2>
-        <p>View upcoming shows and assigned positions.</p>
+       <p>View upcoming shows and assigned positions.</p>
+<div id="mySchedules">Loading schedules...</div>
       </div>
-      <div class="card">
-        <h2>⚠️ My Disciplinary Actions</h2>
-        <p>View your private disciplinary history.</p>
-      </div>
-      <div class="card">
-        <h2>🏖️ My LOAs</h2>
-        <p>View and manage leave requests.</p>
-      </div>
+   
+<div class="card">
+  <h2>⚠️ My Disciplinary Actions</h2>
+  <p>View your private disciplinary history.</p>
+  <div id="myDiscipline">Loading disciplinary records...</div>
+</div>
+
+<div class="card">
+  <h2>🏖️ My LOAs</h2>
+  <p>View and manage leave requests.</p>
+  <div id="myLoas">Loading leave requests...</div>
+</div>
+
       <div class="card">
         <h2>👤 My Profile</h2>
         <p>View your staff information.</p>
@@ -199,6 +205,63 @@
       `;
       staffFeatures.appendChild(adminCard);
     }
+    
+    // Load records belonging to the signed-in staff member.
+    async function loadStaffRecords(table, elementId, columns, orderColumn, render) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+
+      const { data, error } = await client
+        .from(table)
+        .select(columns)
+        .eq("staff_id", user.id)
+        .order(orderColumn, { ascending: false });
+
+      container.replaceChildren();
+
+      if (error) {
+        container.textContent = "Unable to load records: " + error.message;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        container.textContent = "No records found.";
+        return;
+      }
+
+      data.forEach(record => {
+        const item = document.createElement("p");
+        item.textContent = render(record);
+        container.appendChild(item);
+      });
+    }
+
+    await Promise.all([
+      loadStaffRecords(
+        "staff_schedules",
+        "mySchedules",
+        "show_title, position, starts_at, ends_at, notes",
+        "starts_at",
+        r => `${r.show_title} — ${r.position} | ${new Date(r.starts_at).toLocaleString()}`
+      ),
+
+      loadStaffRecords(
+        "staff_discipline",
+        "myDiscipline",
+        "action_type, reason, issued_at, appeal_status",
+        "issued_at",
+        r => `${r.action_type}: ${r.reason} | ${new Date(r.issued_at).toLocaleDateString()} | Appeal: ${r.appeal_status || "N/A"}`
+      ),
+
+      loadStaffRecords(
+        "staff_loas",
+        "myLoas",
+        "start_date, end_date, reason, status",
+        "start_date",
+        r => `${r.start_date} to ${r.end_date} | ${r.status} | ${r.reason}`
+      )
+    ]);
+
   }
 
 })();
