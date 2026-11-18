@@ -175,25 +175,57 @@
   const accessMessage = document.getElementById("accessMessage");
   const staffFeatures = document.getElementById("staffFeatures");
 
-  const { data: profile, error: profileError } = await client
-    .from("staff_profiles")
-    .select("display_name, position, role")
-    .eq("user_id", user.id)
-    .maybeSingle();
+ 
+const { data: sessionData, error: sessionError } =
+  await client.auth.getSession();
 
-  if (profileError) {
-    accessMessage.textContent =
-      "Unable to verify staff access: " + profileError.message;
-  } else if (!profile) {
-    accessMessage.textContent =
-      "Access Denied: Your Discord account is not registered as BloxTalk staff.";
+let profile = null;
+let profileError = null;
+
+if (sessionError || !sessionData.session) {
+  profileError = {
+    message: "Please sign in with Discord."
+  };
+} else {
+  const { data: verification, error: verifyError } =
+    await client.functions.invoke("verify-discord-staff");
+
+  if (verifyError || !verification?.verified) {
+    profileError = {
+      message:
+        verification?.reason ||
+        verification?.error ||
+        verifyError?.message ||
+        "Your Discord account does not have an authorized BloxTalk staff role."
+    };
   } else {
-    accessMessage.textContent =
-      "Welcome, " + profile.display_name +
-      " | " + (profile.position || "Staff") +
-      " | " + profile.role.toUpperCase();
+    const { data: staffProfile } = await client
+      .from("staff_profiles")
+      .select("display_name, position")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-    staffFeatures.classList.remove("hidden");
+    profile = {
+      display_name:
+        staffProfile?.display_name ||
+        user.user_metadata?.full_name ||
+        "BloxTalk Staff",
+      position: staffProfile?.position || "Staff",
+      role: verification.access
+    };
+  }
+}
+
+if (profileError) {
+  accessMessage.textContent =
+    "Access Denied: " + profileError.message;
+} else {
+  accessMessage.textContent =
+    "Welcome, " + profile.display_name +
+    " | " + profile.position +
+    " | " + profile.role.toUpperCase();
+
+  staffFeatures.classList.remove("hidden");
 
     if (profile.role === "admin") {
       const adminCard = document.createElement("div");
@@ -265,6 +297,7 @@
         r => `${r.start_date} to ${r.end_date} | ${r.status} | ${r.reason}`
       )
     ]);
+  }
 
   }
 
