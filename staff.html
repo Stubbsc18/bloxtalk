@@ -138,7 +138,7 @@
     const { error } = await client.auth.signInWithOAuth({
       provider: "discord",
       options: {
-        redirectTo: "https://stubbsc18.github.io/bloxtalk/staff.html"
+        redirectTo: "https://stubbs18.github.io/bloxtalk/staff.html"
       }
     });
 
@@ -296,10 +296,6 @@ if (profileError) {
         "start_date",
         r => `${r.start_date} to ${r.end_date} | ${r.status} | ${r.reason}`
       )
-    );
-}
-
-}
-}
-
+      );
+  }
 })();
