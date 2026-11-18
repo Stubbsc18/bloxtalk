@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BloxTalk | Staff Portal</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg,#090d25,#171044); color: white; font-family: Arial,sans-serif; }
+    header { padding: 22px 7%; background: #0b0e29; border-bottom: 1px solid #35345f; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .brand { font-size: 23px; font-weight: bold; } .brand span { color: #b38cff; } a { color: #c9b5ff; }
+    main { max-width: 950px; margin: 65px auto; padding: 20px; }
+    .panel { background: #171b3d; border: 1px solid #383c68; border-radius: 18px; padding: 32px; text-align: center; }
+    h1 { margin-top: 0; } p { color: #c5c7df; line-height: 1.6; }
+    button { background: #5865f2; color: white; border: 0; border-radius: 9px; padding: 12px 18px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    button:hover { filter: brightness(1.12); } button:disabled { opacity: .6; cursor: wait; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(270px,1fr)); gap: 18px; margin-top: 25px; }
+    .card { background: #22264d; border: 1px solid #414575; border-radius: 14px; padding: 25px; text-align: left; min-width: 0; }
+    .card h2 { font-size: 19px; margin-top: 0; } .hidden { display: none !important; } #status { margin-top: 18px; }
+    .record { border-top: 1px solid #484c77; padding: 14px 0; overflow-wrap: anywhere; }
+    .record p { margin: 6px 0; } .record strong { color: white; }
+    .small { font-size: 13px; } .error { color: #ffb8c3; } .success { color: #a5f3c2; }
+    textarea { display: block; width: 100%; min-height: 105px; padding: 12px; background: #111638; color: white; border: 1px solid #686eaa; border-radius: 8px; font: inherit; resize: vertical; margin: 10px 0; }
+    label { display: block; font-weight: bold; margin-top: 10px; }
+    .appeal-form { margin-top: 12px; padding: 12px; background: #171b3d; border-radius: 10px; }
+    .appeal-form button { margin-right: 8px; margin-bottom: 6px; }
+    .secondary { background: #4a4d70; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 7px; background: #414575; color: white; font-size: 12px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">BLOX<span>TALK</span> | STAFF</div>
+  <a href="./index.html">Main Website</a>
+</header>
+<main>
+  <section id="login" class="panel">
+    <h1>BloxTalk Staff Portal</h1>
+    <p>Sign in with your Discord account to access your staff portal.</p>
+    <button id="loginButton" type="button">Login with Discord</button>
+    <p id="status"></p>
+  </section>
+  <section id="dashboard" class="hidden">
+    <div class="panel">
+      <h1>Welcome to BloxTalk Staff</h1>
+      <p id="userInfo"></p>
+      <p id="accessMessage">Checking your staff permissions...</p>
+      <button id="logoutButton" type="button">Sign Out</button>
+    </div>
+    <div id="staffFeatures" class="grid hidden">
+      <div class="card">
+        <h2>📅 My Schedule</h2>
+        <p>View upcoming shows and assigned positions.</p>
+        <div id="mySchedules">Loading schedules...</div>
+      </div>
+      <div class="card">
+        <h2>⚠️ My Disciplinary Actions</h2>
+        <p>View your private disciplinary history and appeal eligible actions.</p>
+        <div id="myDiscipline">Loading disciplinary records...</div>
+        <button id="refreshDiscipline" class="secondary" type="button">Refresh Discipline &amp; Appeals</button>
+      </div>
+      <div class="card">
+        <h2>📨 My Appeal History</h2>
+        <p>Track your submitted appeals and read decision notes.</p>
+        <div id="myAppeals">Loading appeals...</div>
+      </div>
+      <div class="card">
+        <h2>🏖️ My LOAs</h2>
+        <p>View and manage leave requests.</p>
+        <div id="myLoas">Loading leave requests...</div>
+      </div>
+      <div class="card">
+        <h2>👤 My Profile</h2>
+        <p id="profileInfo">View your staff information.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="./supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const status = $('status');
+  const url = window.BLOXTALK_SUPABASE_URL;
+  const key = window.BLOXTALK_SUPABASE_ANON_KEY;
+  if (!url || !key || !window.supabase) {
+    status.textContent = 'Supabase configuration unavailable.';
+    return;
+  }
+  const client = window.supabase.createClient(url, key);
+  $('loginButton').onclick = async () => {
+    status.textContent = 'Redirecting to Discord...';
+    const { error } = await client.auth.signInWithOAuth({
+      provider: 'discord',
+      options: { redirectTo: 'https://stubbsc18.github.io/bloxtalk/staff.html' }
+    });
+    if (error) status.textContent = error.message;
+  };
+  $('logoutButton').onclick = async () => {
+    await client.auth.signOut();
+    window.location.replace('./staff.html');
+  };
+  const { data, error } = await client.auth.getUser();
+  if (error || !data?.user) return;
+  const user = data.user;
+  $('login').classList.add('hidden');
+  $('dashboard').classList.remove('hidden');
+  const identity = user.identities?.find(item => item.provider === 'discord');
+  const name = identity?.identity_data?.full_name || identity?.identity_data?.name || user.user_metadata?.full_name || 'Discord User';
+  $('userInfo').textContent = 'Signed in as ' + name;
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  let profile = null;
+  let profileError = null;
+  if (sessionError || !sessionData?.session) {
+    profileError = { message: 'Please sign in with Discord.' };
+  } else {
+    const { data: verification, error: verifyError } = await client.functions.invoke('verify-discord-staff');
+    if (verifyError || !verification?.verified) {
+      profileError = {
+        message: verification?.reason || verification?.error || verifyError?.message || 'Your Discord account does not have an authorized BloxTalk staff role.'
+      };
+    } else {
+      const { data: staffProfile, error: staffProfileError } = await client
+        .from('staff_profiles').select('display_name, position').eq('user_id', user.id).maybeSingle();
+      if (staffProfileError) {
+        profileError = { message: staffProfileError.message };
+      } else {
+        profile = {
+          display_name: staffProfile?.display_name || user.user_metadata?.full_name || 'BloxTalk Staff',
+          position: staffProfile?.position || 'Staff',
+          role: verification.access
+        };
+      }
+    }
+  }
+  if (profileError) {
+    $('accessMessage').textContent = 'Access Denied: ' + profileError.message;
+    return;
+  }
+  $('accessMessage').textContent = 'Welcome, ' + profile.display_name + ' | ' + profile.position + ' | ' + profile.role.toUpperCase();
+  $('profileInfo').textContent = profile.display_name + ' — ' + profile.position + ' (' + profile.role + ')';
+  $('staffFeatures').classList.remove('hidden');
+  if (profile.role === 'admin') {
+    const adminCard = document.createElement('div');
+    adminCard.className = 'card';
+    const heading = document.createElement('h2');
+    heading.textContent = '🛡️ Administration';
+    const description = document.createElement('p');
+    description.textContent = 'Manage BloxTalk staff, schedules, disciplinary actions, and LOAs.';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Open Staff Management';
+    button.addEventListener('click', () => { window.location.href = 'staff-admin.html'; });
+    adminCard.append(heading, description, button);
+    $('staffFeatures').appendChild(adminCard);
+  }
+  function addText(parent, tag, value, className) {
+    const el = document.createElement(tag);
+    el.textContent = value;
+    if (className) el.className = className;
+    parent.appendChild(el);
+    return el;
+  }
+  async function loadStaffRecords(table, elementId, columns, orderColumn, render) {
+    const container = $(elementId);
+    const { data, error } = await client.from(table).select(columns)
+      .eq('staff_id', user.id).order(orderColumn, { ascending: false });
+    container.replaceChildren();
+    if (error) { container.textContent = 'Unable to load records: ' + error.message; return; }
+    if (!data?.length) { container.textContent = 'No records found.'; return; }
+    data.forEach(record => addText(container, 'p', render(record)));
+  }
+  let appealRefreshInProgress = false;
+  async function loadDisciplineAndAppeals() {
+    if (appealRefreshInProgress) return;
+    appealRefreshInProgress = true;
+    $('refreshDiscipline').disabled = true;
+    try {
+      const [disciplineResult, appealsResult] = await Promise.all([
+        client.from('staff_discipline')
+          .select('id,action_type,reason,issued_at,appeal_status,overturned_at')
+          .eq('staff_id', user.id).order('issued_at', { ascending: false }),
+        client.from('staff_discipline_appeals')
+          .select('id,discipline_id,appeal_reason,status,decision_notes,reviewed_at,created_at')
+          .eq('staff_id', user.id).order('created_at', { ascending: false })
+      ]);
+      const disciplineContainer = $('myDiscipline');
+      const appealContainer = $('myAppeals');
+      disciplineContainer.replaceChildren();
+      appealContainer.replaceChildren();
+      if (disciplineResult.error) {
+        addText(disciplineContainer, 'p', 'Unable to load discipline: ' + disciplineResult.error.message, 'error');
+      } else if (!disciplineResult.data?.length) {
+        addText(disciplineContainer, 'p', 'No disciplinary records found.');
+      } else {
+        const appeals = appealsResult.error ? [] : (appealsResult.data || []);
+        for (const record of disciplineResult.data) {
+          const item = document.createElement('div');
+          item.className = 'record';
+          const title = (record.action_type || 'Action').toUpperCase();
+          addText(item, 'strong', title);
+          addText(item, 'p', record.reason || 'No reason recorded.');
+          addText(item, 'p', 'Issued: ' + (record.issued_at ? new Date(record.issued_at).toLocaleDateString() : 'Unknown'), 'small');
+          if (record.overturned_at) {
+            addText(item, 'p', 'OVERTURNED — ' + new Date(record.overturned_at).toLocaleDateString(), 'success');
+          } else {
+            const pending = appeals.some(a => a.discipline_id === record.id && a.status === 'pending');
+            if (appealsResult.error) {
+              addText(item, 'p', 'Appeals are temporarily unavailable.', 'error');
+            } else if (pending) {
+              addText(item, 'p', 'Appeal pending administrator review.', 'small');
+            } else {
+              const appealButton = document.createElement('button');
+              appealButton.type = 'button';
+              appealButton.textContent = 'Submit Appeal';
+              appealButton.addEventListener('click', () => {
+                const existing = item.querySelector('.appeal-form');
+                if (existing) { existing.remove(); return; }
+                const form = document.createElement('form');
+                form.className = 'appeal-form';
+                const label = addText(form, 'label', 'Why are you appealing this action?');
+                const textarea = document.createElement('textarea');
+                textarea.required = true;
+                textarea.minLength = 10;
+                textarea.maxLength = 5000;
+                textarea.placeholder = 'Explain why you believe this action should be reconsidered...';
+                label.appendChild(textarea);
+                const feedback = addText(form, 'p', '', 'small');
+                const submit = document.createElement('button');
+                submit.type = 'submit';
+                submit.textContent = 'Send Appeal';
+                const cancel = document.createElement('button');
+                cancel.type = 'button';
+                cancel.className = 'secondary';
+                cancel.textContent = 'Cancel';
+                cancel.addEventListener('click', () => form.remove());
+                form.append(submit, cancel);
+                form.addEventListener('submit', async event => {
+                  event.preventDefault();
+                  const reason = textarea.value.trim();
+                  if (reason.length < 10) { feedback.textContent = 'Please enter at least 10 characters.'; return; }
+                  if (!window.confirm('Submit this appeal for administrator review?')) return;
+                  submit.disabled = true;
+                  cancel.disabled = true;
+                  feedback.textContent = 'Submitting appeal...';
+                  const { error } = await client.from('staff_discipline_appeals').insert({
+                    discipline_id: record.id,
+                    staff_id: user.id,
+                    appeal_reason: reason
+                  });
+                  if (error) {
+                    feedback.textContent = 'Appeal could not be submitted: ' + error.message;
+                    feedback.className = 'small error';
+                    submit.disabled = false;
+                    cancel.disabled = false;
+                    return;
+                  }
+                  feedback.textContent = 'Appeal submitted successfully. Refreshing...';
+                  form.remove();
+                  appealRefreshInProgress = false;
+                  await loadDisciplineAndAppeals();
+                });
+                item.appendChild(form);
+              });
+              item.appendChild(appealButton);
+            }
+          }
+          disciplineContainer.appendChild(item);
+        }
+      }
+      if (appealsResult.error) {
+        addText(appealContainer, 'p', 'Unable to load appeals: ' + appealsResult.error.message, 'error');
+      } else if (!appealsResult.data?.length) {
+        addText(appealContainer, 'p', 'No appeals submitted yet.');
+      } else {
+        const disciplineById = new Map((disciplineResult.data || []).map(d => [d.id, d]));
+        for (const appeal of appealsResult.data) {
+          const item = document.createElement('div');
+          item.className = 'record';
+          const action = disciplineById.get(appeal.discipline_id)?.action_type || 'Disciplinary action';
+          addText(item, 'strong', action.toUpperCase() + ' — ' + appeal.status.toUpperCase());
+          addText(item, 'p', 'Your appeal: ' + appeal.appeal_reason);
+          addText(item, 'p', 'Submitted: ' + new Date(appeal.created_at).toLocaleString(), 'small');
+          if (appeal.decision_notes) addText(item, 'p', 'Administrator decision: ' + appeal.decision_notes);
+          if (appeal.reviewed_at) addText(item, 'p', 'Reviewed: ' + new Date(appeal.reviewed_at).toLocaleString(), 'small');
+          appealContainer.appendChild(item);
+        }
+      }
+    } finally {
+      appealRefreshInProgress = false;
+      $('refreshDiscipline').disabled = false;
+    }
+  }
+  $('refreshDiscipline').addEventListener('click', loadDisciplineAndAppeals);
+  await Promise.all([
+    loadStaffRecords('staff_schedules','mySchedules','show_title,position,starts_at,ends_at,notes','starts_at',
+      r => `${r.show_title} — ${r.position} | ${new Date(r.starts_at).toLocaleString()}`),
+    loadDisciplineAndAppeals(),
+    loadStaffRecords('staff_loas','myLoas','start_date,end_date,reason,status','start_date',
+      r => `${r.start_date} to ${r.end_date} | ${r.status} | ${r.reason || ''}`)
+  ]);
+})();
+</script>
+</body>
+</html>
