@@ -1,0 +1,21 @@
+{
+  "announcement": "Season 3 is here!",
+  "hosts": [],
+  "production": [],
+  "episodes": [
+    {
+      "season": "3",
+      "number": "4",
+      "title": "Colin's Birthday Special 🎂",
+      "date": "November 27, 2026",
+      "description": "Celebrate BloxTalk founder Colin's birthday with the crew."
+    }
+  ],
+  "events": [
+    {
+      "title": "Colin's Birthday Celebration",
+      "date": "November 27, 2026",
+      "description": "Join the hosts for a birthday special."
+    }
+  ]
+}
