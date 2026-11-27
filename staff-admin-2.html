@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>BloxTalk | Staff Administration</title>
+<style>:root{color-scheme:dark;font-family:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#090d27,#201247);color:#f6f5ff;min-height:100vh}header{background:#0d1033;border-bottom:1px solid #454273;padding:20px 6%;display:flex;justify-content:space-between;gap:12px}a{color:#c9a5ff}main{max-width:1100px;margin:35px auto;padding:0 20px}.panel{background:#1b2044;border:1px solid #444879;border-radius:15px;padding:22px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.grid .panel{margin:0}label{display:block;margin:12px 0 5px;font-weight:600}input,select,textarea{width:100%;padding:11px;background:#0e1537;border:1px solid #666a9d;border-radius:7px;color:white;font:inherit}textarea{min-height:76px}button{background:#6267f5;color:white;border:0;border-radius:8px;padding:10px 16px;font-weight:bold;cursor:pointer;margin:10px 8px 0 0}button:disabled{opacity:.55;cursor:wait}.delete,.deny{background:#a6324b}.approve{background:#227e63}.hidden{display:none!important}.record{border-top:1px solid #42466e;padding:14px 0;white-space:pre-wrap;overflow-wrap:anywhere}.status{padding:12px 16px;border:1px solid #6267a5;border-radius:8px;margin:15px 0}.error{border-color:#f48a94;color:#ffc8cf}.muted{color:#c5c4db}
+/* Modern schedule cards */
+.schedule-cards{display:grid;gap:13px;margin-top:12px}
+.schedule-card{background:linear-gradient(135deg,#242a56,#191f43);border:1px solid #51588d;border-radius:14px;padding:18px;min-width:0;box-shadow:0 5px 18px #070b251c}
+.schedule-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.schedule-card-title{font-size:18px;font-weight:800;line-height:1.35;overflow-wrap:anywhere}
+.schedule-role{font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#494e92;color:#f6f4ff;border:1px solid #777bd1;border-radius:100px;padding:6px 10px;font-weight:800;max-width:100%;overflow-wrap:anywhere}
+.schedule-person{color:#c9c9e8;margin-top:7px;font-size:14px;overflow-wrap:anywhere}
+.schedule-date{margin-top:16px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#c4c8eb;font-weight:800}
+.schedule-time-row{display:flex;align-items:center;gap:12px;margin-top:7px;flex-wrap:wrap}
+.schedule-time{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.schedule-arrow{color:#a6a9df;font-size:18px}
+.schedule-meta{font-size:12px;color:#bfc4e7;margin-top:9px}
+.schedule-notes{font-size:13px;line-height:1.5;color:#e4e4fa;border-top:1px solid #454b7b;margin-top:14px;padding-top:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:420px){.schedule-card{padding:14px}.schedule-time{font-size:18px}}
+.content-list{display:grid;gap:12px}.content-item{border:1px solid #565a88;border-radius:10px;padding:12px;background:#111738}.content-item img{width:100px;height:70px;object-fit:cover;border-radius:7px;display:block;margin:8px 0}.content-item button{margin-top:8px}.hint{color:#c5c4db;font-size:13px}.application-toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:14px 0}.application-toolbar label{margin:0}.application-toolbar select{max-width:220px}.application-card{padding:18px;border:1px solid #565a88;border-radius:12px;background:#111738}.application-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.application-top h3{margin:0}.application-answer{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 14px}.application-meta{color:#c5c4db;font-size:13px}.application-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.application-controls select{max-width:190px}.application-controls button{margin:0}
+/* BloxTalk Corporate Blue 2026 visual system */
+:root{color-scheme:dark;--bg:#0B1220;--surface:#172338;--surface2:#1D2C44;--line:#30435E;--blue:#2563EB;--cyan:#38BDF8;--text:#F1F5F9;--muted:#A8BCD2;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html{scroll-behavior:smooth}body{background:var(--bg)!important;color:var(--text)!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important;line-height:1.55;min-height:100vh}
+header{background:#101B2D!important;border-bottom:1px solid var(--line)!important;padding:20px clamp(20px,4vw,64px)!important;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 10px 35px #02061724}
+header strong,header h1{font-weight:850;letter-spacing:-.035em}header strong span{color:var(--cyan)!important}header p{margin:3px 0 0!important}
+main{max-width:1320px!important;margin:0 auto!important;padding:30px clamp(16px,3vw,40px) 80px!important}
+h1{font-size:clamp(27px,3vw,36px);letter-spacing:-.045em;margin:0 0 6px!important}h2{font-size:19px;letter-spacing:-.025em;margin:0 0 12px}h3{font-size:16px;margin:24px 0 12px}p,small,.muted,.hint{color:var(--muted)!important}
+a{color:#7DD3FC!important;text-decoration:none}a:hover{text-decoration:underline}
+.panel,.notice{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;padding:clamp(18px,2.5vw,26px)!important;box-shadow:0 10px 35px #02061720;margin:18px 0!important}
+.panel:target{border-color:var(--blue)!important;box-shadow:0 0 0 2px #2563eb44}
+input:not([type=checkbox]):not([type=hidden]),select,textarea{width:100%;background:#0F1B2E!important;color:var(--text)!important;border:1px solid #40536D!important;border-radius:10px!important;padding:12px 13px!important;font:inherit!important;outline:none;min-height:44px}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan)!important;box-shadow:0 0 0 3px #38bdf827!important}
+input[type=checkbox]{accent-color:var(--blue)}input[type=file]{max-width:100%}label{font-size:13px;letter-spacing:.01em;color:#D7E5F5;font-weight:650;margin:14px 0 6px!important}
+button,.link{background:var(--blue)!important;color:white!important;border:1px solid transparent!important;border-radius:10px!important;padding:11px 16px!important;font:700 13px/1.3 inherit;cursor:pointer;transition:background .15s,transform .15s,border-color .15s;box-shadow:none!important}
+button:hover:not(:disabled),.link:hover{background:#1D4ED8!important;transform:translateY(-1px);text-decoration:none}button:disabled{opacity:.55;cursor:not-allowed}
+button.secondary,.link,button[id^=refresh],button[id^=clear],button[id^=cancel],#reload{background:#243754!important;border-color:#3B5372!important}
+button.secondary:hover,.link:hover,button[id^=refresh]:hover{background:#304866!important}
+button.danger,button.delete,button.deny{background:#9F3049!important}button.danger:hover,button.delete:hover,button.deny:hover{background:#BE3856!important}button.approve{background:#087D6C!important}
+.item,.content-item,.application-card,.schedule-card{background:#101D30!important;border:1px solid var(--line)!important;border-radius:13px!important;padding:18px!important;margin:12px 0!important;box-shadow:none!important}
+.record{border-color:var(--line)!important}.schedule-role{background:#1C4377!important;color:#BAE6FD!important;border-color:#3466A2!important}.schedule-date,.schedule-meta,.schedule-person,.schedule-notes{color:#B9CCE2!important}.schedule-notes{border-color:var(--line)!important}.schedule-arrow{color:var(--cyan)!important}
+.status,.notice{border-color:#34598D!important;background:#142945!important;color:#DCEBFF!important}.error{border-color:#D66B80!important;color:#FFD2DC!important}
+.application-answer{color:#DFE9F5}.application-meta{color:var(--muted)!important}.application-toolbar,.actions,.application-controls{gap:10px!important}.grid{gap:18px!important}
+#dashboard>section.panel,#dashboard>.panel{scroll-margin-top:24px}
+.bt-nav{display:flex;gap:7px;overflow-x:auto;padding:12px 0 16px;margin:14px 0 8px;scrollbar-width:thin}.bt-nav a{display:inline-flex;align-items:center;white-space:nowrap;padding:9px 13px;border-radius:10px;color:#BDD0E5!important;background:#172338;border:1px solid #30435E;font-size:13px;font-weight:650}.bt-nav a:hover,.bt-nav a.active{background:#1D4275;border-color:#3478CD;color:#FFF!important;text-decoration:none}
+.bt-eyebrow{font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin:0 0 7px}.bt-intro{margin:0 0 20px}.bt-brand{font-weight:850;letter-spacing:-.04em;font-size:20px}.bt-brand em{font-style:normal;color:var(--cyan)}
+#status{overflow-wrap:anywhere}.bt-toplink{font-weight:650;font-size:13px}
+@media(min-width:1000px){#dashboard>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){header{padding:16px!important}main{padding:22px 14px 60px!important}.panel{padding:18px!important}.actions button,.application-controls button{max-width:100%}.bt-nav{margin-top:8px}}
+</style><style id="career-layout-upgrade">
+#careerManager #careerList{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px;align-items:stretch;margin-top:20px}
+#careerManager .career-card{display:flex;flex-direction:column;gap:15px;min-width:0;background:#101d30!important;border:1px solid #2c415b!important;border-radius:16px!important;padding:22px!important;margin:0!important;box-shadow:0 5px 22px #00000018!important;transition:border-color .2s,transform .2s}
+#careerManager .career-card:hover{border-color:#3b82f6!important;transform:translateY(-2px)}
+.career-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.career-card-title{font-size:17px;font-weight:750;line-height:1.35;color:#f1f5f9;margin:0;overflow-wrap:anywhere}.career-badge{flex-shrink:0;border-radius:99px;padding:5px 9px;font-size:10px;font-weight:800;letter-spacing:.06em}.career-badge.open{background:#123b32;color:#6ee7b7}.career-badge.closed{background:#443039;color:#fda4af}
+.career-card-meta{display:grid;gap:9px;color:#b4c5db;font-size:13px}.career-meta-row{display:flex;align-items:center;gap:9px}.career-meta-icon{width:19px;text-align:center;color:#60a5fa}.career-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:15px;border-top:1px solid #2a3c55}.career-card-actions button{margin:0!important;padding:9px 13px!important;font-size:12px!important}.career-card-actions .delete{margin-left:auto!important}
+.career-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.career-count{font-size:12px;color:#93a9c4;background:#0b1626;padding:7px 12px;border-radius:100px;border:1px solid #2a3c55}
+#careerManager #careerForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;align-items:end}#careerManager #careerForm>label,#careerManager #careerForm>input,#careerManager #careerForm>select,#careerManager #careerForm>textarea,#careerManager #careerForm>p{grid-column:span 2}#careerManager #careerForm>button{justify-self:start}
+@media(max-width:600px){#careerManager #careerList{grid-template-columns:1fr}.career-card-actions .delete{margin-left:0!important}}
+</style><style>
+/* Corporate Blue navigation workspace */
+main{max-width:1540px!important;padding:22px 20px!important;margin:0 auto!important}
+.admin-workspace{display:grid;grid-template-columns:245px minmax(0,1fr);gap:24px;align-items:start}
+.admin-sidebar{background:#101d31;border:1px solid #2a3d57;border-radius:16px;padding:16px;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+.sidebar-brand{font-size:13px;letter-spacing:.13em;font-weight:850;color:#67c7ff;padding:13px 10px 20px;border-bottom:1px solid #30445e;margin-bottom:10px}
+.admin-nav{display:grid;gap:5px}.admin-nav .nav-item{width:100%;margin:0;text-align:left;padding:12px 13px;border-radius:9px;background:transparent;color:#c5d3e6;font-size:13px;font-weight:650;transition:background .15s}
+.admin-nav .nav-item:hover{background:#233550}.admin-nav .nav-item.active{background:#2563eb;color:#fff;box-shadow:0 3px 12px #0b1e4d}
+.admin-content{min-width:0}.workspace-header{padding:5px 3px 12px;border-bottom:1px solid #30445e;margin-bottom:18px}.workspace-header h2{margin:0;font-size:26px}.workspace-header p{margin:7px 0 0;color:#9eb0c8;font-size:14px}
+.workspace-view{display:none!important}.workspace-view.active{display:block!important}.workspace-view.panel{margin:0!important}
+.overview-panel{background:#172338;border:1px solid #30445e;border-radius:16px;padding:24px}.overview-panel h2{margin-top:0}.overview-panel p{color:#aebed4}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:22px}.overview-tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:16px;text-align:left;background:#0e1b2e;border:1px solid #30445e;border-radius:12px;padding:19px;color:#f1f5f9;margin:0;min-height:105px}.overview-tile:hover{background:#203653;border-color:#3b82f6}.overview-tile span{color:#67c7ff;font-size:12px}
+.admin-content .panel{max-width:none}.admin-content .grid{display:block}.admin-content .content-list{min-width:0}
+@media(max-width:850px){.admin-workspace{grid-template-columns:1fr}.admin-sidebar{position:static;max-height:none}.admin-nav{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px}.admin-nav .nav-item{white-space:nowrap;width:auto;flex:0 0 auto}.sidebar-brand{padding-bottom:10px}.overview-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}}
+@media(max-width:500px){main{padding:12px!important}.admin-workspace{gap:14px}.overview-panel{padding:16px}.workspace-header h2{font-size:22px}}
+</style><style id="points-styles">.points-toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:18px 0}.points-toolbar label{margin:0!important}.points-toolbar select{max-width:340px}.points-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}.points-stats article{padding:18px;border:1px solid #30435e;border-radius:12px;background:#101d30}.points-stats span{display:block;color:#a8bcd2;font-size:12px}.points-stats strong{display:block;color:#38bdf8;font-size:25px;margin-top:6px}.point-entry{border:1px solid #30435e;background:#101d30;border-radius:10px;padding:13px;margin:8px 0}.point-entry small{display:block;color:#a8bcd2;margin-top:5px}.point-entry.reversed{opacity:.6}.custom-award-box{margin:22px 0;padding:20px;border:1px solid #34598d;border-radius:14px;background:#11253f}.custom-award-box h3{margin-top:0}.custom-award-box form{max-width:600px}.custom-award-box button{margin-top:15px!important}#customPointsFeedback{margin-top:12px} .recognition-progress{height:9px;background:#0b1626;border:1px solid #30435e;border-radius:99px;overflow:hidden;margin-top:14px}.recognition-progress>div{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#38bdf8);transition:width .3s}#recognitionProgressText{display:block;margin-top:8px;color:#a8bcd2;font-size:12px}</style><style>body.hr-mode [data-view="records"] button.delete,body.hr-mode [data-view="records"] button.danger{display:none!important}</style><style id="clean-admin-layout">
+.bt-nav{display:none!important}.admin-workspace{grid-template-columns:220px minmax(0,1fr);gap:20px}.admin-sidebar{padding:12px;max-height:calc(100vh - 32px)}.admin-nav{gap:3px}.nav-group{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#8da5c3;padding:12px 10px 4px;font-weight:750}.admin-nav .nav-item{background:transparent!important;border:1px solid transparent!important;color:#c5d3e6!important;padding:8px 10px!important;border-radius:7px!important;font-size:13px!important}.admin-nav .nav-item:hover{background:#233550!important;transform:none!important}.admin-nav .nav-item.active{background:#1d4275!important;border-color:#3478cd!important;color:white!important}.overview-tile{background:#101d30!important;border-color:#30435e!important}.points-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) auto;align-items:end;gap:8px 12px}.points-toolbar label{grid-column:1;grid-row:1}.points-toolbar select{grid-column:1;grid-row:2;max-width:none}.points-toolbar button{grid-column:2;grid-row:2;margin:0}.points-stats article{padding:14px}.custom-award-box{padding:16px;margin:14px 0}.custom-award-box form{max-width:none;display:grid;grid-template-columns:minmax(120px,1fr) minmax(200px,3fr);gap:6px 16px;align-items:start}.custom-award-box form label{margin:0!important}.custom-award-box form label[for=customPointsAmount]{grid-column:1;grid-row:1}.custom-award-box form label[for=customPointsReason]{grid-column:2;grid-row:1}.custom-award-box form button{grid-column:1/-1;justify-self:start}.point-entry{padding:10px 12px}.hr-mode .nav-group{display:none}@media(max-width:850px){.admin-workspace{grid-template-columns:1fr}.nav-group{display:none}.admin-nav .nav-item{flex:none}}@media(max-width:550px){.custom-award-box form{display:block}.custom-award-box form label{margin-top:10px!important}}
+</style></head>
+<body><header><strong>BLOX<span style="color:#c48aff">TALK</span> | ADMINISTRATION</strong><a href="staff.html">Back to Staff Portal</a></header><main><div class="bt-eyebrow">OPERATIONS CENTER / STAFF ADMINISTRATION</div><h1>Staff Management</h1><p class="muted">Schedules, disciplinary actions, appeals, leave requests, and staff directory.</p><nav aria-label="Staff administration sections" class="bt-nav"><a href="#applicationsManager">Applications</a><a href="#careerManager">Careers</a><a href="#leadershipSection">Leadership</a><a href="#showsSection">Shows</a><a href="#gallerySection">Gallery</a><a href="#staffSection">Staff</a><a href="#schedulingSection">Scheduling</a><a href="#disciplineSection">Discipline</a><a href="#loaSection">Leave</a><a href="#appealsSection">Appeals</a></nav><div class="status" id="status">Checking administrator access…</div><div class="hidden" id="dashboard"><div class="admin-workspace"><aside aria-label="Administration navigation" class="admin-sidebar"><div class="sidebar-brand">BLOXTALK  /  ADMIN</div><nav class="admin-nav"><div class="nav-group">Workspace</div><button class="nav-item" data-target="overview" type="button">Overview</button><div class="nav-group">Staff operations</div><button class="nav-item" data-target="staff" type="button">Staff Directory</button><button class="nav-item" data-target="points" type="button">🏅 Activity Points</button><button class="nav-item" data-target="promotions" type="button">Staff Promotions</button><button class="nav-item" data-target="scheduling" type="button">Show Scheduling</button><button class="nav-item" data-target="records" type="button">Schedules &amp; Records</button><div class="nav-group">Human resources</div><button class="nav-item" data-target="applications" type="button">Applications</button><button class="nav-item" data-target="careers" type="button">Careers &amp; Positions</button><button class="nav-item" data-target="discipline" type="button">Disciplinary Actions</button><button class="nav-item" data-target="leave" type="button">Leave Requests</button><button class="nav-item" data-target="appeals" type="button">Pending Appeals</button><button class="nav-item" data-target="history" type="button">Appeal History</button><div class="nav-group">Executive & public</div><button class="nav-item" data-target="decisions" type="button">⚖ Executive Decisions</button><button class="nav-item" data-target="leadership" type="button">Leadership Directory</button><button class="nav-item" data-target="broadcast" type="button">🔴 Broadcast Management</button><button class="nav-item" data-target="shows" type="button">Upcoming Shows</button><button class="nav-item" data-target="gallery" type="button">Photo Gallery</button><button class="nav-item" data-target="bloxies" type="button">🏆 The Bloxies</button></nav></aside><div class="admin-content"><div class="workspace-header"><h2 id="workspaceTitle">Overview</h2><p id="workspaceSubtitle">Choose a category to manage BloxTalk operations.</p></div><section class="workspace-view overview-panel" data-view="overview"><h2>Administration Overview</h2><p>Select a workspace below to manage staff, recruitment, shows, and operations.</p><div class="overview-grid"><button class="overview-tile" data-target="broadcast" type="button"><strong>Broadcast Management</strong><span>Manage livestreams →</span></button><button class="overview-tile" data-target="bloxies" type="button"><strong>🏆 The Bloxies</strong><span>Nomination results →</span></button><button class="overview-tile" data-target="decisions" type="button"><strong>⚖ Executive Decisions</strong><span>Review proposals &amp; vote →</span></button><button class="overview-tile" data-target="applications" type="button"><strong>Applications</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="careers" type="button"><strong>Careers &amp; Positions</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="leadership" type="button"><strong>Leadership Directory</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="shows" type="button"><strong>Upcoming Shows</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="gallery" type="button"><strong>Photo Gallery</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="points" type="button"><strong>🏅 Activity Points</strong><span>View awards &amp; balances →</span></button><button class="overview-tile" data-target="promotions" type="button"><strong>Staff Promotions</strong><span>Manage advancement →</span></button><button class="overview-tile" data-target="staff" type="button"><strong>Staff Directory</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="scheduling" type="button"><strong>Show Scheduling</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="discipline" type="button"><strong>Disciplinary Actions</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="leave" type="button"><strong>Leave Requests</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="records" type="button"><strong>Schedules &amp; Records</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="appeals" type="button"><strong>Pending Appeals</strong><span>Open workspace →</span></button><button class="overview-tile" data-target="history" type="button"><strong>Appeal History</strong><span>Open workspace →</span></button></div></section><section class="workspace-view panel" data-view="broadcast"><h2>Broadcast Management</h2><p class="hint">Publish YouTube broadcasts and recordings. Live status is manually controlled; scheduled times do not automatically mark a stream live.</p><form id="btBroadcastForm"><label><input type="checkbox" id="btEnabled" style="width:auto"> Show broadcast center</label><label>Broadcast status</label><select id="btStatus"><option value="offline">Offline</option><option value="scheduled">Scheduled</option><option value="live">Live now</option></select><label>Episode title</label><input id="btTitle" required maxlength="160"><label>Description</label><textarea id="btDescription" maxlength="4000"></textarea><label>YouTube video or livestream URL / ID</label><input id="btVideo" placeholder="https://www.youtube.com/watch?v=..."><label>Scheduled start (your local time)</label><input id="btStart" type="datetime-local"><h3>Previous broadcasts</h3><div id="btAdminReplays"></div><label>Recording title</label><input id="btReplayTitle" maxlength="160"><label>Recording YouTube URL</label><input id="btReplayUrl"><button type="button" id="btAddReplay">Add recording</button><p class="hint">Save to publish all changes.</p><button type="submit" id="btSave" disabled>Save broadcast settings</button><button type="button" id="btReload">Reload</button><p id="btFeedback" role="status"></p></form></section><section class="workspace-view panel" data-view="bloxies"><h2>🏆 The Bloxies | Awards Management</h2><p class="hint">Private nomination results. Select award questions to include in the tally. Names are grouped by case and whitespace.</p><div id="bxStats" class="points-stats"></div><button id="bxRefresh">Refresh Results</button><button id="bxExport">Export CSV</button><p id="bxStatus" role="status"></p><h3>Public Vote Tracker</h3><p class="hint">Select only award questions below. Their answer text will be public, so exclude voter identities and private information. Saving publishes the selected categories, not individual submissions.</p><label><input type="checkbox" id="bxPublicEnabled" style="width:auto"> Show public standings</label><button id="bxPublicSave" type="button" disabled>Save Public Settings</button><p id="bxPublicMessage" role="status"></p><h3>Award questions</h3><div id="bxQuestions"></div><h3>Nominee &amp; Alias Management</h3><p class="hint">Enter an approved public name and its alternate names, one per line. Use the same public name for every alias of a nominee. Do not publish private real names.</p><form id="bxAliasForm"><label>Public nominee name</label><input id="bxAliasName" required maxlength="100"><label>Roblox username / approved aliases (one per line)</label><textarea id="bxAliasValues" required></textarea><button type="submit">Register aliases</button></form><p id="bxAliasStatus" role="status"></p><div id="bxAliasList"></div><h3>Nomination Leaderboard</h3><div id="bxTally"></div><h3>Submission Records</h3><input id="bxSearch" placeholder="Search nominations"><div id="bxRecords"></div></section><section class="workspace-view panel" data-view="promotions"><h2>Staff Promotions</h2><p class="hint">Manage personnel advancement, approvals and promotion history.</p><div class="points-stats" id="promoStats"></div><h3>New / Edit Promotion</h3><form id="promoForm"><label>Staff member</label><select id="promoStaff" required></select><label>Current position</label><input id="promoOld" readonly><label>Current department</label><input id="promoOldDept"><label>New position</label><input id="promoNew" required><label>New department</label><input id="promoNewDept"><label>Reason for promotion</label><textarea id="promoReason" required></textarea><label>Effective date</label><input id="promoDate" type="date" required><button type="submit">Save Promotion Request</button> <button type="button" id="promoCancel">Clear Form</button></form><h3>Promotion Records</h3><select id="promoFilter"><option value="">All records</option><option>Pending</option><option>Approved</option><option>Denied</option></select><button type="button" id="promoRefresh">Refresh</button><p id="promoStatus" role="status" class="hint"></p><div id="promoList"></div></section>
+<section class="workspace-view panel" data-view="decisions" id="decisionRegistry">
+<h2>⚖ Executive Decision Registry</h2><p class="hint">Proposals, verified executive votes, and permanent decision records. Only registered executive members can vote. Only the portal owner can finalize decisions.</p>
+<p id="registryMessage" class="hint" role="status">Checking executive access…</p>
+<div id="registryCreate" class="hidden"><h3>Submit a Proposal</h3><form id="registryForm">
+<label for="regTitle">Proposal title</label><input id="regTitle" maxlength="160" required minlength="3" placeholder="Updated operational standards">
+<label for="regCategory">Category</label><select id="regCategory"><option>Policy</option><option>Operations</option><option>Leadership</option><option>Staffing</option><option>Other</option></select>
+<label for="regDescription">Proposal details</label><textarea id="regDescription" maxlength="10000" minlength="10" required placeholder="Describe the proposed change and its purpose"></textarea>
+<label for="regDeadline">Voting closes (your local time)</label><input id="regDeadline" type="datetime-local" required>
+<button type="submit">Submit Proposal</button></form></div>
+<h3>Decision Archive</h3><div class="application-toolbar"><input id="regSearch" placeholder="Search by ID, title, category or description" aria-label="Search decisions" style="flex:2;min-width:200px"><select id="regFilter" aria-label="Filter decisions" style="flex:1;min-width:145px"><option value="">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select><button id="regRefresh" type="button">Refresh</button></div>
+<div id="regStats" class="hint"></div><div id="regList" class="content-list"></div></section><section class="workspace-view panel" data-view="applications" id="applicationsManager"><h2>📨 Recruitment — Applications Management</h2><p class="hint">Review applications submitted through the BloxTalk Careers page. Access is restricted by Supabase recruitment reviewer permissions.</p><div class="application-toolbar"><label for="applicationFilter">Filter by status</label><select id="applicationFilter"><option value="">All applications</option><option>Pending</option><option>Under Review</option><option>Accepted</option><option>Denied</option></select><button id="refreshApplications" type="button">Refresh Applications</button></div><p class="hint" id="applicationsStatus" role="status">Loading applications…</p><div class="content-list" id="applicationsList"></div></section><section class="workspace-view panel" data-view="careers" id="careerManager"><h2>💼 Homepage — Careers &amp; Open Positions</h2><p class="hint">Create and manage listings shown on the public Careers page. Closing a position hides it from applicants without deleting it.</p><form id="careerForm"><input id="careerId" type="hidden"/><label>Position title</label><input id="careerTitle" maxlength="150" placeholder="Example: Production Assistant" required=""/><label>Department</label><input id="careerDepartment" maxlength="100" placeholder="Production" required=""/><label>Work type</label><select id="careerType"><option>Volunteer</option><option>Part-time</option><option>Full-time</option><option>Contract</option><option>Other</option></select><label>Location / format</label><input id="careerLocation" maxlength="120" value="Remote · Roblox / Discord"/><label>Position description</label><textarea id="careerDescription" maxlength="4000" placeholder="What will this person do?" required=""></textarea><label>Requirements</label><textarea id="careerRequirements" maxlength="4000" placeholder="Skills, experience, availability..."></textarea><label>External application URL (optional)</label><input id="careerApply" maxlength="1000" placeholder="https://example.com/apply" type="url"/><p class="hint">Leave blank to use the built-in BloxTalk website application form. (Requires the application backend to be deployed.)</p><label>Display order (lower first)</label><input id="careerOrder" type="number" value="0"/><label><input checked="" id="careerOpen" style="width:auto" type="checkbox"/> Open for applications (publicly visible)</label><button type="submit">Save Position</button><button id="careerClear" type="button">Clear Form</button></form><div class="career-list-heading"><h3>Manage Listings</h3><span class="career-count" id="careerCount">Loading positions…</span></div><div class="content-list" id="careerList">Loading…</div></section><section class="workspace-view panel" data-view="leadership" id="leadershipSection"><h2>👑 Homepage — Leadership Directory</h2><p class="hint">Manage public leadership profiles here. Published members appear in Meet Our Leadership on the main website. This does not create a Staff Portal login account.</p><form id="publicStaffForm"><input id="publicStaffId" type="hidden"/><label>Display name</label><input id="publicStaffName" maxlength="100" required=""/><label>Position / title</label><input id="publicStaffRole" maxlength="120" required=""/><label>Website section</label><select id="publicStaffSection"><option value="leadership">Leadership</option></select><label>Short bio</label><textarea id="publicStaffBio" maxlength="1000"></textarea><label>Headshot (optional; JPG, PNG, WebP, max 8 MB)</label><input accept="image/jpeg,image/png,image/webp" id="publicStaffPhoto" type="file"/><label>Display order</label><input id="publicStaffOrder" type="number" value="0"/><label><input checked="" id="publicStaffPublished" style="width:auto" type="checkbox"/> Visible on homepage</label><button type="submit">Save Staff Member</button><button id="clearPublicStaff" type="button">Clear Form</button></form><div class="content-list" id="publicStaffAdmin">Loading…</div></section><section class="workspace-view panel" data-view="shows" id="showsSection"><h2>🎬 Homepage — Upcoming Shows</h2><p class="hint">These are public show announcements, separate from staff assignments. Times entered in your browser's local timezone.</p><form id="publicShowForm"><input id="publicShowId" type="hidden"/><label>Show title</label><input id="publicShowTitle" maxlength="150" required=""/><label>Season / Episode label (optional)</label><input id="publicShowEpisode" maxlength="80" placeholder="Season 3 · Episode 4"/><label>Start date and time</label><input id="publicShowStarts" required="" type="datetime-local"/><label>Description</label><textarea id="publicShowDescription" maxlength="2000"></textarea><label>Cover image (optional; JPG, PNG or WebP, max 8 MB)</label><input accept="image/jpeg,image/png,image/webp" id="publicShowCover" type="file"/><label><input checked="" id="publicShowPublished" style="width:auto" type="checkbox"/> Published</label><button type="submit">Save Public Show</button><button id="clearPublicShow" type="button">Clear Form</button></form><div class="content-list" id="publicShowsAdmin">Loading…</div></section><section class="workspace-view panel" data-view="gallery" id="gallerySection"><h2>📷 Homepage — Photo Gallery</h2><form id="galleryForm"><label>Select photo (JPG, PNG or WebP, max 8 MB)</label><input accept="image/jpeg,image/png,image/webp" id="galleryFile" required="" type="file"/><label>Caption</label><input id="galleryCaption" maxlength="300"/><label>Display order (lower first)</label><input id="galleryOrder" type="number" value="0"/><button type="submit">Upload Photo</button></form><div class="content-list" id="galleryAdmin">Loading…</div></section><section class="workspace-view panel" data-view="points" id="pointsManager"><h2>🏅 Staff Activity Points</h2><p class="hint">Shared Supabase records from the Discord /points commands. Review staff balances and award custom points. Awards are validated by Supabase permissions.</p><div class="points-toolbar"><button id="refreshAdminPoints" type="button">Refresh Points</button><label for="pointsStaffSelect">Staff member</label><select id="pointsStaffSelect"><option value="">Select staff member</option></select></div><p id="adminPointsStatus" class="hint" role="status">Select a staff member to view their balance.</p><div class="points-stats"><article><span>Lifetime</span><strong id="adminLifetime">—</strong></article><article><span>This week</span><strong id="adminWeekly">—</strong></article><article><span>Recognition</span><strong id="adminRecognition">—</strong><div class="recognition-progress"><div id="recognitionProgressFill"></div></div><small id="recognitionProgressText">Select a staff member.</small></article></div><div class="custom-award-box"><h3>✨ Award Custom Points</h3><p class="hint">Choose a staff member above, enter a point amount, and optionally explain the contribution. Awards are recorded in Supabase.</p><form id="customPointsForm"><label for="customPointsAmount">Points to award</label><select id="customPointsAmount" required><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option></select><label for="customPointsReason">Reason (optional)</label><textarea id="customPointsReason" maxlength="500" placeholder="Example: Helped prepare the studio before the show"></textarea><button id="submitCustomPoints" type="submit">Award Points</button></form><p id="customPointsFeedback" class="hint" role="status"></p></div><h3>Recent Point Transactions</h3><div id="adminPointHistory" class="content-list">Select a staff member.</div><h3>Weekly Leaderboard</h3><div id="adminLeaderboard" class="content-list">Loading leaderboard…</div></section><div class="workspace-view panel" data-view="staff" id="staffSection"><h2>Staff Directory</h2><div id="staffList">Loading…</div></div><section class="workspace-view panel" data-view="scheduling" id="schedulingSection"><h2>Assign Show Schedule</h2><form id="scheduleForm"><input id="scheduleId" type="hidden"/><label>Staff member</label><select id="scheduleStaff" required=""></select><label>Show title</label><input id="showTitle" maxlength="150" required=""/><label>Assigned position</label><input id="position" maxlength="120" required=""/><label>Start date and time</label><input id="startsAt" required="" type="datetime-local"/><label>End date and time</label><input id="endsAt" required="" type="datetime-local"/><label>Notes</label><textarea id="scheduleNotes"></textarea><button id="saveScheduleButton" type="submit">Assign Schedule</button><button id="cancelScheduleEdit" type="button">Cancel Edit</button></form></section><section class="workspace-view panel" data-view="discipline" id="disciplineSection"><h2>Issue Disciplinary Action</h2><form id="disciplineForm"><label>Staff member</label><select id="disciplineStaff" required=""></select><label>Action</label><select id="actionType" required=""><option value="warning">Verbal Warning</option><option value="warning">Written Warning</option><option value="strike">Strike</option><option value="suspension">Suspension</option><option value="termination">Termination</option></select><label>Reason</label><textarea id="disciplineReason" required=""></textarea><button type="submit">Issue Action</button></form></section><section class="workspace-view panel" data-view="leave" id="loaSection"><h2>LOA Requests</h2><button id="refreshLoas" type="button">Refresh Requests</button><div id="loaList">Loading…</div></section><section class="workspace-view panel" data-view="records"><h2>Recent Schedules &amp; Actions</h2><button id="refreshRecords" type="button">Refresh Records</button><h3>Upcoming Assigned Shows</h3><div id="scheduleList">Loading…</div><h3>Disciplinary Actions</h3><div id="disciplineList">Loading…</div></section><section class="workspace-view panel" data-view="appeals" id="appealsSection"><h2>Pending Disciplinary Appeals</h2><p class="muted">Review each explanation and enter decision notes before approving or denying.</p><button id="refreshAppeals" type="button">Refresh Appeals</button><div id="pendingAppeals">Loading…</div></section><section class="workspace-view panel" data-view="history"><h2>Appeal History</h2><div id="appealHistory">Loading…</div></section></div></div></div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="supabase-config.js"></script><script>
+(async()=>{'use strict';
+const $=id=>document.getElementById(id), status=$('status');
+
+function scheduleDateParts(iso){
+  const date=new Date(iso);
+  return {
+    date:date.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'}),
+    time:date.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})
+  };
+}
+function scheduleZone(iso){
+  try {return new Intl.DateTimeFormat(undefined,{timeZoneName:'long'}).formatToParts(new Date(iso)).find(p=>p.type==='timeZoneName')?.value||Intl.DateTimeFormat().resolvedOptions().timeZone||'Local time'}
+  catch{return 'Local time'}
+}
+function makeScheduleCard(record,staffName){
+  const card=document.createElement('article');card.className='schedule-card';
+  const head=document.createElement('div');head.className='schedule-card-header';
+  const title=document.createElement('div');title.className='schedule-card-title';title.textContent=record.show_title||'Untitled show';
+  const role=document.createElement('span');role.className='schedule-role';role.textContent=record.position||'Staff';
+  head.append(title,role);card.appendChild(head);
+  if(staffName){const person=document.createElement('div');person.className='schedule-person';person.textContent='👤 '+staffName;card.appendChild(person)}
+  const start=scheduleDateParts(record.starts_at),end=record.ends_at?scheduleDateParts(record.ends_at):null;
+  const date=document.createElement('div');date.className='schedule-date';date.textContent=start.date;card.appendChild(date);
+  const times=document.createElement('div');times.className='schedule-time-row';
+  const startEl=document.createElement('span');startEl.className='schedule-time';startEl.textContent=start.time;times.appendChild(startEl);
+  if(end){const arrow=document.createElement('span');arrow.className='schedule-arrow';arrow.textContent='→';const endEl=document.createElement('span');endEl.className='schedule-time';endEl.textContent=end.time;times.append(arrow,endEl)}
+  card.appendChild(times);
+  const meta=document.createElement('div');meta.className='schedule-meta';
+  let detail=scheduleZone(record.starts_at);
+  if(end&&end.date!==start.date)detail+=' · Ends '+end.date;
+  if(record.ends_at){const minutes=Math.round((new Date(record.ends_at)-new Date(record.starts_at))/60000);if(minutes>0)detail+=' · '+(minutes>=60?`${Math.floor(minutes/60)}h${minutes%60?` ${minutes%60}m`:''}`:`${minutes}m`)}
+  meta.textContent=detail;card.appendChild(meta);
+  if(record.notes){const notes=document.createElement('div');notes.className='schedule-notes';notes.textContent=record.notes;card.appendChild(notes)}
+  return card;
+}
+
+const setStatus=(msg,error=false)=>{status.textContent=msg;status.classList.toggle('error',error)};
+const url=window.BLOXTALK_SUPABASE_URL,key=window.BLOXTALK_SUPABASE_ANON_KEY;
+if(!window.supabase||!url||!key||url.includes('YOUR-PROJECT')){setStatus('Supabase is not configured.',true);return}
+const client=window.supabase.createClient(url,key);
+const {data:{user},error:authError}=await client.auth.getUser();
+if(authError||!user){setStatus('Sign in through the Staff Portal first.',true);return}
+const {data:verification,error:verifyError}=await client.functions.invoke('verify-discord-staff');
+if(verifyError||!verification?.verified||!['admin','moderator'].includes(verification.access)){setStatus('Authorized Executive or HR role required.',true);return}
+const isHR=verification.access==='moderator';
+window.bloxtalkPortalAccess=verification.access;
+if(isHR){document.body.classList.add("hr-mode");const allowed=new Set(['overview','applications','points','scheduling','discipline','leave','records','appeals','history']);document.querySelectorAll('[data-target]').forEach(e=>{if(!allowed.has(e.dataset.target))e.classList.add('hidden')});document.querySelector('.bt-nav')?.classList.add('hidden');}
+const {data:profile,error:profileError}=await client.from('staff_profiles').select('user_id,display_name,role').eq('user_id',user.id).maybeSingle();
+if(profileError||!profile){setStatus('Administrator access required.',true);return}
+window.bloxtalkAdminReady=true;window.dispatchEvent(new Event('bloxtalk-admin-ready'));$('dashboard').classList.remove('hidden');setStatus((isHR?'HR moderator':'Administrator')+' access verified: '+(profile.display_name||'Administrator'));
+let staff=[];
+const nameOf=id=>staff.find(p=>p.user_id===id)?.display_name||id;
+const showError=e=>setStatus(e?.message||String(e),true);
+function line(target,text){const div=document.createElement('div');div.className='record';div.textContent=text;target.appendChild(div);return div}
+function empty(target,msg){target.replaceChildren();line(target,msg)}
+
+let permissionRows=[];
+async function permissionCall(body){const {data,error}=await client.functions.invoke('sync-website-permissions',{body});if(error)throw Error(data?.error||error.message);if(data?.error)throw Error(data.error);return data;}
+async function loadPermissionDirectory(){const root=$('staffList');root.replaceChildren();const search=document.createElement('input');search.placeholder='Search staff or position';const filter=document.createElement('select');for(const v of ['all','admin','moderator','staff','denied','unverified'])filter.add(new Option(v==='all'?'All permissions':v,v));const summary=document.createElement('p'),feedback=document.createElement('p'),list=document.createElement('div'),all=document.createElement('button');all.textContent='Sync All Staff Permissions';root.append(search,filter,all,summary,feedback,list);let busy=false;
+function render(){summary.textContent=['admin','moderator','staff','denied','unverified'].map(v=>v+': '+permissionRows.filter(p=>p.access===v).length).join(' | ');list.replaceChildren();for(const p of permissionRows){if(filter.value!=='all'&&p.access!==filter.value)continue;if(![p.display_name,p.discord_name,p.position].join(' ').toLowerCase().includes(search.value.toLowerCase()))continue;const row=line(list,`${p.discord_name||p.display_name} — ${p.position||'Staff'} | ${p.access} | Last verified: ${p.verified_at?new Date(p.verified_at).toLocaleString():'Never'}${p.verified_at&&Date.now()-Date.parse(p.verified_at)>900000?' (expired)':''}${p.reason?' | '+p.reason:''}`);const b=document.createElement('button');b.textContent='Sync';b.disabled=busy||!p.discord_id;b.onclick=()=>run([p]);row.append(document.createElement('br'),b);}}
+async function run(rows){if(busy)return;busy=true;all.disabled=true;render();let ok=0,failed=0;for(const p of rows){feedback.textContent=`Syncing ${p.display_name} (${ok+failed+1}/${rows.length})`;try{Object.assign(p,await permissionCall({action:'sync',user_id:p.user_id}));ok++;}catch(e){failed++;p.reason='Sync failed: '+e.message;}render();}busy=false;all.disabled=false;feedback.textContent=`Finished: ${ok} synced, ${failed} failed. Failed accounts retain their previous verification until expiry.`;render();}
+search.oninput=render;filter.onchange=render;all.onclick=()=>{if(confirm('Refresh website access for all linked staff from Discord?'))run(permissionRows.filter(p=>p.discord_id));};all.disabled=true;try{permissionRows=(await permissionCall({action:'list'})).rows||[];all.disabled=false;render();}catch(e){feedback.textContent='Directory unavailable: '+e.message;}}
+async function loadStaff(){const {data,error}=await client.from('staff_profiles').select('user_id,display_name,position,role').order('display_name');if(error){showError(error);return}staff=data||[];$('staffList').replaceChildren();if(!staff.length)line($('staffList'),'No staff registered.');if(!isHR)await loadPermissionDirectory();for(const id of ['scheduleStaff','disciplineStaff']){const select=$(id);select.replaceChildren();select.add(new Option('Select staff member',''));staff.forEach(p=>select.add(new Option(`${p.display_name} — ${p.position||'Staff'}`,p.user_id)))}}
+async function save(table,values,form){const btn=form.querySelector('button[type=submit]');btn.disabled=true;try{const {error}=await client.from(table).insert(values);if(error)throw error;form.reset();await loadRecords();setStatus('Record saved successfully.')}catch(e){showError(e)}finally{btn.disabled=false}}
+function clearScheduleEdit(){$('scheduleForm').reset();$('scheduleId').value='';$('saveScheduleButton').textContent='Assign Schedule'}
+$('cancelScheduleEdit').addEventListener('click',clearScheduleEdit);
+function localInputDate(iso){const d=new Date(iso);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')+'T'+[String(d.getHours()).padStart(2,'0'),String(d.getMinutes()).padStart(2,'0')].join(':')}
+function editSchedule(r){$('scheduleId').value=r.id;$('scheduleStaff').value=r.staff_id;$('showTitle').value=r.show_title||'';$('position').value=r.position||'';$('startsAt').value=localInputDate(r.starts_at);$('endsAt').value=localInputDate(r.ends_at);$('scheduleNotes').value=r.notes||'';$('saveScheduleButton').textContent='Save Schedule Changes';$('scheduleForm').scrollIntoView({behavior:'smooth',block:'center'})}
+$('scheduleForm').addEventListener('submit',async e=>{e.preventDefault();const start=new Date($('startsAt').value),end=new Date($('endsAt').value);if(!(end>start)){setStatus('End time must be after start time.',true);return}const id=$('scheduleId').value;const values={staff_id:$('scheduleStaff').value,show_title:$('showTitle').value.trim(),position:$('position').value.trim(),starts_at:start.toISOString(),ends_at:end.toISOString(),notes:$('scheduleNotes').value.trim()};const btn=$('saveScheduleButton');btn.disabled=true;try{const query=id?client.from('staff_schedules').update(values).eq('id',id).select('id'):client.from('staff_schedules').insert(values).select('id');const {data,error}=await query;if(error)throw error;if(!data?.length)throw Error('No record changed. Check staff_schedules permissions.');clearScheduleEdit();await loadRecords();setStatus(id?'Schedule updated successfully.':'Schedule assigned successfully.')}catch(err){showError(err)}finally{btn.disabled=false}});
+$('disciplineForm').addEventListener('submit',async e=>{e.preventDefault();if(!confirm('Issue this disciplinary action?'))return;await save('staff_discipline',{staff_id:$('disciplineStaff').value,action_type:$('actionType').value,reason:$('disciplineReason').value.trim(),issued_by:user.id,issued_at:new Date().toISOString(),appeal_status:'none'},e.currentTarget)});
+async function loadLoas(){const list=$('loaList');list.textContent='Loading…';const {data,error}=await client.from('staff_loas').select('id,staff_id,start_date,end_date,reason,status,created_at').order('created_at',{ascending:false}).limit(100);if(error){empty(list,'Unable to load LOAs: '+error.message);return}list.replaceChildren();if(!data?.length){line(list,'No leave requests found.');return}data.forEach(r=>{const div=line(list,`${nameOf(r.staff_id)} | ${r.start_date} to ${r.end_date}\n${r.reason||'No reason given'}\nStatus: ${r.status||'pending'}`);if((r.status||'pending').toLowerCase()!=='pending')return;for(const decision of ['approved','denied']){const btn=document.createElement('button');btn.textContent=decision==='approved'?'Approve':'Deny';btn.addEventListener('click',async()=>{if(!confirm(`${btn.textContent} LOA for ${nameOf(r.staff_id)}?`))return;btn.disabled=true;const {error}=await client.from('staff_loas').update({status:decision,reviewed_by:user.id}).eq('id',r.id);if(error)showError(error);else{await loadLoas();setStatus('LOA '+decision+'.')}btn.disabled=false});div.appendChild(btn)}})}
+async function loadRecords(){const [schedules,discipline]=await Promise.all([client.from('staff_schedules').select('id,staff_id,show_title,position,starts_at,ends_at,notes').gt('ends_at',new Date().toISOString()).order('starts_at',{ascending:true}).limit(100),client.from('staff_discipline').select('id,staff_id,action_type,reason,issued_at,appeal_status,overturned_at,removed_at').is('removed_at',null).order('issued_at',{ascending:false}).limit(50)]);const s=$('scheduleList'),d=$('disciplineList');s.replaceChildren();d.replaceChildren();if(schedules.error)line(s,schedules.error.message);else if(!schedules.data?.length)line(s,'No schedules found.');else {s.classList.add('schedule-cards');schedules.data.forEach(r=>{const card=makeScheduleCard(r,nameOf(r.staff_id));const actions=document.createElement('div');actions.className='actions';const edit=document.createElement('button');edit.type='button';edit.textContent='Edit Assignment';edit.onclick=()=>editSchedule(r);const del=document.createElement('button');del.type='button';del.className='delete';del.textContent='Delete Assignment';del.onclick=async()=>{if(!confirm('Delete this assigned show for '+nameOf(r.staff_id)+'? This cannot be undone.'))return;del.disabled=true;try{const {data,error}=await client.from('staff_schedules').delete().eq('id',r.id).select('id');if(error)throw error;if(!data?.length)throw Error('No record deleted. Check database permissions.');if($('scheduleId').value===String(r.id))clearScheduleEdit();await loadRecords();setStatus('Assignment deleted.')}catch(err){showError(err)}finally{del.disabled=false}};actions.append(edit,del);card.append(actions);s.appendChild(card)});}if(discipline.error)line(d,discipline.error.message);else if(!discipline.data?.length)line(d,'No disciplinary actions found.');else discipline.data.forEach(r=>{const div=line(d,`${nameOf(r.staff_id)} | ${r.action_type} | ${new Date(r.issued_at).toLocaleDateString()}\n${r.reason}\nAppeal: ${r.appeal_status||'none'}${r.overturned_at?'\nOVERTURNED':''}`);const btn=document.createElement('button');btn.type='button';btn.className='delete';btn.textContent='Remove Discipline';btn.addEventListener('click',async()=>{if(!confirm(`Remove ${r.action_type} for ${nameOf(r.staff_id)} from active disciplinary records? Appeal history will be preserved.`))return;btn.disabled=true;try{const {error}=await client.rpc('remove_staff_discipline',{p_discipline_id:r.id});if(error)throw error;await Promise.all([loadRecords(),loadAppeals()]);setStatus('Discipline removed from active records. Appeal history preserved.')}catch(e){showError(e)}finally{btn.disabled=false}});div.appendChild(btn)})}
+async function loadAppeals(){const pending=$('pendingAppeals'),history=$('appealHistory');pending.textContent='Loading…';history.textContent='Loading…';const {data,error}=await client.from('staff_discipline_appeals').select('id,discipline_id,staff_id,appeal_reason,status,decision_notes,reviewed_by,reviewed_at,created_at').order('created_at',{ascending:false}).limit(200);if(error){empty(pending,'Unable to load appeals: '+error.message);empty(history,'Unable to load appeals: '+error.message);return}const appeals=data||[];const ids=[...new Set(appeals.map(a=>a.discipline_id))];let disciplines=new Map();if(ids.length){const result=await client.from('staff_discipline').select('id,action_type,reason,overturned_at,removed_at').in('id',ids);if(result.error){showError(result.error)}else disciplines=new Map((result.data||[]).map(d=>[d.id,d]))}pending.replaceChildren();history.replaceChildren();const pendingItems=appeals.filter(a=>a.status==='pending'),past=appeals.filter(a=>a.status!=='pending');if(!pendingItems.length)line(pending,'No pending appeals.');if(!past.length)line(history,'No reviewed appeals yet.');for(const a of pendingItems){const d=disciplines.get(a.discipline_id);const div=line(pending,`Staff: ${nameOf(a.staff_id)}\nAction: ${d?.action_type||'Discipline #'+a.discipline_id}\nOriginal reason: ${d?.reason||'Unavailable'}\nSubmitted: ${new Date(a.created_at).toLocaleString()}${d?.removed_at?'\nDISCIPLINE REMOVED — appeal remains on file':''}\nAppeal: ${a.appeal_reason}`);const label=document.createElement('label');label.textContent='Decision notes (required)';const notes=document.createElement('textarea');notes.placeholder='Explain your decision';notes.maxLength=5000;div.append(label,notes);for(const decision of ['approved','denied']){const btn=document.createElement('button');btn.type='button';btn.className=decision==='approved'?'approve':'deny';btn.textContent=decision==='approved'?'Approve Appeal':'Deny Appeal';btn.addEventListener('click',async()=>{const reason=notes.value.trim();if(!reason){setStatus('Decision notes are required.',true);notes.focus();return}if(!confirm(`${btn.textContent} for ${nameOf(a.staff_id)}?`))return;const buttons=div.querySelectorAll('button');buttons.forEach(b=>b.disabled=true);try{const {error}=await client.rpc('review_discipline_appeal',{p_appeal_id:a.id,p_decision:decision,p_decision_notes:reason});if(error)throw error;await Promise.all([loadAppeals(),loadRecords()]);setStatus(`Appeal ${decision} successfully.`)}catch(e){showError(e);buttons.forEach(b=>b.disabled=false)}});div.appendChild(btn)}}past.forEach(a=>{const d=disciplines.get(a.discipline_id);line(history,`Staff: ${nameOf(a.staff_id)} | ${d?.action_type||'Discipline #'+a.discipline_id}\nStatus: ${a.status.toUpperCase()}${d?.overturned_at?' — OVERTURNED':''}${d?.removed_at?' — REMOVED':''}\nAppeal: ${a.appeal_reason}\nDecision notes: ${a.decision_notes||'None'}\nReviewed by: ${a.reviewed_by?nameOf(a.reviewed_by):'Unknown'}\nReviewed at: ${a.reviewed_at?new Date(a.reviewed_at).toLocaleString():'Not reviewed'}`)})}
+$('refreshLoas').addEventListener('click',loadLoas);$('refreshRecords').addEventListener('click',loadRecords);$('refreshAppeals').addEventListener('click',loadAppeals);await loadStaff();await Promise.all([loadLoas(),loadRecords(),loadAppeals()]);
+// Homepage publishing tools (admin only, enforced by Supabase RLS).
+const publicBucket='bloxtalk-gallery';
+function imageUrl(path){return client.storage.from(publicBucket).getPublicUrl(path).data.publicUrl}
+async function uploadPublicImage(file){if(!file)return null;const allowed=['image/jpeg','image/png','image/webp'];if(!allowed.includes(file.type)||file.size>8*1024*1024)throw Error('Select a JPG, PNG or WebP under 8 MB.');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=crypto.randomUUID()+'.'+ext;const {error}=await client.storage.from(publicBucket).upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;return path}
+function resetPublicShow(){$('publicShowForm').reset();$('publicShowId').value='';$('publicShowPublished').checked=true}
+$('clearPublicShow').addEventListener('click',resetPublicShow);
+async function loadPublicShows(){const el=$('publicShowsAdmin');el.textContent='Loading…';const {data,error}=await client.from('public_shows').select('*').order('starts_at',{ascending:false}).limit(100);el.replaceChildren();if(error){line(el,error.message);return}if(!data?.length){line(el,'No public shows yet.');return}for(const s of data){const item=document.createElement('div');item.className='content-item';line(item,`${s.title} | ${new Date(s.starts_at).toLocaleString()} | ${s.published?'Published':'Draft'}`);if(s.cover_path){const img=document.createElement('img');img.src=imageUrl(s.cover_path);item.append(img)}const edit=document.createElement('button');edit.textContent='Edit';edit.onclick=()=>{$('publicShowId').value=s.id;$('publicShowTitle').value=s.title;$('publicShowEpisode').value=s.episode||'';$('publicShowStarts').value=new Date(new Date(s.starts_at).getTime()-new Date(s.starts_at).getTimezoneOffset()*60000).toISOString().slice(0,16);$('publicShowDescription').value=s.description||'';$('publicShowPublished').checked=s.published;$('publicShowForm').scrollIntoView({behavior:'smooth'})};const del=document.createElement('button');del.className='delete';del.textContent='Delete';del.onclick=async()=>{if(!confirm('Delete this public show?'))return;const {error}=await client.from('public_shows').delete().eq('id',s.id);if(error)showError(error);else{if(s.cover_path)await client.storage.from(publicBucket).remove([s.cover_path]);await loadPublicShows()}};item.append(edit,del);el.append(item)}}
+$('publicShowForm').addEventListener('submit',async e=>{e.preventDefault();const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;try{const id=$('publicShowId').value;const file=$('publicShowCover').files[0];const payload={title:$('publicShowTitle').value.trim(),episode:$('publicShowEpisode').value.trim(),description:$('publicShowDescription').value.trim(),starts_at:new Date($('publicShowStarts').value).toISOString(),published:$('publicShowPublished').checked};if(file)payload.cover_path=await uploadPublicImage(file);const query=id?client.from('public_shows').update(payload).eq('id',id):client.from('public_shows').insert(payload);const {error}=await query;if(error)throw error;resetPublicShow();await loadPublicShows();setStatus('Homepage show saved.')}catch(err){showError(err)}finally{btn.disabled=false}});
+async function loadGalleryAdmin(){const el=$('galleryAdmin');el.textContent='Loading…';const {data,error}=await client.from('public_gallery').select('*').order('sort_order').order('created_at',{ascending:false}).limit(100);el.replaceChildren();if(error){line(el,error.message);return}if(!data?.length){line(el,'No photos yet.');return}for(const g of data){const item=document.createElement('div');item.className='content-item';const img=document.createElement('img');img.src=imageUrl(g.image_path);img.alt=g.caption||'Gallery photo';item.append(img);line(item,`${g.caption||'No caption'} | Order: ${g.sort_order} | ${g.published?'Published':'Hidden'}`);const toggle=document.createElement('button');toggle.textContent=g.published?'Hide':'Publish';toggle.onclick=async()=>{const {error}=await client.from('public_gallery').update({published:!g.published}).eq('id',g.id);if(error)showError(error);else await loadGalleryAdmin()};const edit=document.createElement('button');edit.textContent='Edit caption / order';edit.onclick=async()=>{const caption=prompt('Photo caption:',g.caption||'');if(caption===null)return;const order=prompt('Display order (lower first):',String(g.sort_order));if(order===null)return;const {error}=await client.from('public_gallery').update({caption:caption.slice(0,300),sort_order:Number(order)||0}).eq('id',g.id);if(error)showError(error);else await loadGalleryAdmin()};const del=document.createElement('button');del.className='delete';del.textContent='Delete';del.onclick=async()=>{if(!confirm('Permanently delete this photo?'))return;const {error}=await client.from('public_gallery').delete().eq('id',g.id);if(error){showError(error);return}await client.storage.from(publicBucket).remove([g.image_path]);await loadGalleryAdmin()};item.append(toggle,edit,del);el.append(item)}}
+$('galleryForm').addEventListener('submit',async e=>{e.preventDefault();const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;let path=null;try{path=await uploadPublicImage($('galleryFile').files[0]);const {error}=await client.from('public_gallery').insert({image_path:path,caption:$('galleryCaption').value.trim(),sort_order:Number($('galleryOrder').value)||0,published:true});if(error)throw error;$('galleryForm').reset();await loadGalleryAdmin();setStatus('Photo uploaded to homepage gallery.')}catch(err){if(path)await client.storage.from(publicBucket).remove([path]);showError(err)}finally{btn.disabled=false}});
+if(!isHR)await Promise.all([loadPublicShows(),loadGalleryAdmin()]);
+
+// Public staff directory management; access protected by Supabase RLS.
+function resetPublicStaff(){ $('publicStaffForm').reset();$('publicStaffId').value='';$('publicStaffSection').value='leadership';$('publicStaffPublished').checked=true; }
+$('clearPublicStaff').addEventListener('click',resetPublicStaff);
+async function loadPublicStaff(){
+ const el=$('publicStaffAdmin');el.textContent='Loading…';
+ const {data,error}=await client.from('public_staff').select('*').order('section').order('sort_order').order('created_at');
+ el.replaceChildren();if(error){line(el,error.message);return;}
+ const leaders=(data||[]).filter(s=>s.section==='leadership');
+ if(!leaders.length){line(el,'No leadership members have been added yet. Add a member above and select Visible on homepage.');return;}
+ for(const s of leaders){
+  const item=document.createElement('div');item.className='content-item';
+  if(s.image_path){const img=document.createElement('img');img.src=imageUrl(s.image_path);img.alt=s.display_name;item.append(img);}
+  line(item,`${s.display_name} — ${s.position} (${s.section}) | ${s.published?'Visible':'Hidden'}`);
+  const edit=document.createElement('button');edit.textContent='Edit';edit.onclick=()=>{
+   $('publicStaffId').value=s.id;$('publicStaffName').value=s.display_name;$('publicStaffRole').value=s.position;
+   $('publicStaffSection').value='leadership';$('publicStaffBio').value=s.description||'';
+   $('publicStaffOrder').value=s.sort_order;$('publicStaffPublished').checked=s.published;
+   $('publicStaffForm').scrollIntoView({behavior:'smooth'});
+  };
+  const toggle=document.createElement('button');toggle.textContent=s.published?'Hide':'Show';toggle.onclick=async()=>{
+   const {error}=await client.from('public_staff').update({published:!s.published}).eq('id',s.id);
+   if(error)showError(error);else if(!isHR)await loadPublicStaff();
+  };
+  const del=document.createElement('button');del.className='delete';del.textContent='Delete';del.onclick=async()=>{
+   if(!confirm(`Delete ${s.display_name} from the public staff directory?`))return;
+   const {error}=await client.from('public_staff').delete().eq('id',s.id);
+   if(error)showError(error);else {if(s.image_path)await client.storage.from(publicBucket).remove([s.image_path]);await loadPublicStaff();}
+  };
+  item.append(edit,toggle,del);el.append(item);
+ }
+}
+$('publicStaffForm').addEventListener('submit',async e=>{
+ e.preventDefault();const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;
+ let newPath=null;
+ try{
+  const id=$('publicStaffId').value;
+  const payload={display_name:$('publicStaffName').value.trim(),position:$('publicStaffRole').value.trim(),section:'leadership',description:$('publicStaffBio').value.trim(),sort_order:Number($('publicStaffOrder').value)||0,published:$('publicStaffPublished').checked};
+  const file=$('publicStaffPhoto').files[0];if(file){newPath=await uploadPublicImage(file);payload.image_path=newPath;}
+  const {error}=await (id?client.from('public_staff').update(payload).eq('id',id):client.from('public_staff').insert(payload));
+  if(error)throw error;resetPublicStaff();await loadPublicStaff();setStatus('Leadership member saved to Supabase. Refresh the public homepage to see published profiles.');
+ }catch(err){if(newPath)await client.storage.from(publicBucket).remove([newPath]);showError(err);}finally{btn.disabled=false;}
+});
+if(!isHR)await loadPublicStaff();
+
+
+// Careers management: all writes are checked by Supabase row-level security.
+function resetCareer(){ $('careerForm').reset();$('careerId').value='';$('careerOpen').checked=true; }
+$('careerClear').addEventListener('click',resetCareer);
+async function loadCareers(){
+ const list=$('careerList');list.textContent='Loading…';
+ const {data,error}=await client.from('public_careers').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false}).limit(200);
+ list.replaceChildren();if(error){line(list,'Unable to load positions: '+error.message);return;}
+ $('careerCount').textContent=`${(data||[]).length} positions · ${(data||[]).filter(x=>x.is_open).length} open`;
+ if(!data?.length){line(list,'No positions created yet.');return;}
+ for(const c of data){
+  const item=document.createElement('article');item.className='career-card';
+  const top=document.createElement('div');top.className='career-card-top';
+  const title=document.createElement('h4');title.className='career-card-title';title.textContent=c.title||'Untitled position';
+  const badge=document.createElement('span');badge.className='career-badge '+(c.is_open?'open':'closed');badge.textContent=c.is_open?'OPEN':'CLOSED';top.append(title,badge);
+  const meta=document.createElement('div');meta.className='career-card-meta';
+  for(const [icon,value] of [['▦',c.department||'Unassigned department'],['◷',c.employment_type||'Unspecified'],['⌖',c.location||'Remote / location unspecified']]){
+   const row=document.createElement('div');row.className='career-meta-row';const symbol=document.createElement('span');symbol.className='career-meta-icon';symbol.textContent=icon;const text=document.createElement('span');text.textContent=value;row.append(symbol,text);meta.append(row);
+  }
+  const actions=document.createElement('div');actions.className='career-card-actions';
+  const edit=document.createElement('button');edit.type='button';edit.textContent='Edit';edit.addEventListener('click',()=>{
+   $('careerId').value=c.id;$('careerTitle').value=c.title;$('careerDepartment').value=c.department;
+   $('careerType').value=c.employment_type;$('careerLocation').value=c.location||'';
+   $('careerDescription').value=c.description||'';$('careerRequirements').value=c.requirements||'';
+   $('careerApply').value=c.application_url||'';$('careerOrder').value=c.sort_order||0;
+   $('careerOpen').checked=c.is_open;$('careerManager').scrollIntoView({behavior:'smooth'});
+  });
+  const toggle=document.createElement('button');toggle.type='button';toggle.textContent=c.is_open?'Close Position':'Reopen Position';
+  toggle.addEventListener('click',async()=>{toggle.disabled=true;const {error}=await client.from('public_careers').update({is_open:!c.is_open}).eq('id',c.id);if(error)showError(error);else{await loadCareers();setStatus('Position updated.');}toggle.disabled=false;});
+  const del=document.createElement('button');del.type='button';del.className='delete';del.textContent='Delete';
+  del.addEventListener('click',async()=>{if(!confirm(`Permanently delete ${c.title}?`))return;del.disabled=true;const {error}=await client.from('public_careers').delete().eq('id',c.id);if(error)showError(error);else{await loadCareers();setStatus('Position deleted.');}});
+  actions.append(edit,toggle,del);item.append(top,meta,actions);list.append(item);
+ }
+}
+$('careerForm').addEventListener('submit',async e=>{
+ e.preventDefault();const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;
+ try{
+  const id=$('careerId').value, application_url=$('careerApply').value.trim()||null;
+  if(application_url&&!/^https:\/\//i.test(application_url))throw Error('Application URL must start with https://');
+  const payload={title:$('careerTitle').value.trim(),department:$('careerDepartment').value.trim(),employment_type:$('careerType').value,location:$('careerLocation').value.trim(),description:$('careerDescription').value.trim(),requirements:$('careerRequirements').value.trim(),application_url,sort_order:Number($('careerOrder').value)||0,is_open:$('careerOpen').checked};
+  const {error}=await (id?client.from('public_careers').update(payload).eq('id',id):client.from('public_careers').insert(payload));
+  if(error)throw error;resetCareer();await loadCareers();setStatus('Career listing saved.');
+ }catch(err){showError(err)}finally{btn.disabled=false;}
+});
+ if(!isHR)await loadCareers();
+
+ // Recruitment applications: authorized reviewers only (enforced by Supabase RLS).
+ const applicationStatuses=['Pending','Under Review','Accepted','Denied'];
+ const applicationStatus=$('applicationsStatus'), applicationList=$('applicationsList');
+ const applicationFilter=$('applicationFilter'), refreshApplications=$('refreshApplications');
+ function appField(card,title,value){
+   const heading=document.createElement('strong');heading.textContent=title;
+   const body=document.createElement('div');body.className='application-answer';body.textContent=value||'Not provided';
+   card.append(heading,body);
+ }
+ async function loadApplications(){
+   refreshApplications.disabled=true;
+   applicationStatus.textContent='Loading applications…';
+   applicationStatus.classList.remove('error');
+   applicationList.replaceChildren();
+   try{
+     let query=client.from('staff_applications')
+       .select('id,created_at,position,roblox,discord,reason,experience,status')
+       .order('created_at',{ascending:false}).limit(200);
+     if(applicationFilter.value)query=query.eq('status',applicationFilter.value);
+     const {data,error}=await query;
+     if(error)throw error;
+     const apps=data||[];
+     applicationStatus.textContent=`${apps.length} application(s) found${applicationFilter.value?' for '+applicationFilter.value:''}.`;
+     if(!apps.length){line(applicationList,'No applications match this filter.');return;}
+     for(const a of apps){
+       const card=document.createElement('article');card.className='application-card';
+       const top=document.createElement('div');top.className='application-top';
+       const title=document.createElement('h3');title.textContent=a.position||'Application';
+       const date=document.createElement('span');date.className='application-meta';
+       date.textContent=a.created_at?new Date(a.created_at).toLocaleString():'Date unavailable';
+       top.append(title,date);card.append(top);
+       appField(card,'Roblox username',a.roblox);
+       appField(card,'Discord username',a.discord);
+       appField(card,'Why apply?',a.reason);
+       appField(card,'Previous experience',a.experience);
+       const controls=document.createElement('div');controls.className='application-controls';
+       const label=document.createElement('label');label.textContent='Application status';
+       const select=document.createElement('select');
+       for(const value of applicationStatuses)select.add(new Option(value,value));
+       select.value=applicationStatuses.includes(a.status)?a.status:'Pending';
+       label.append(select);
+       const save=document.createElement('button');save.type='button';save.textContent='Save Status';
+       save.addEventListener('click',async()=>{
+         save.disabled=true;
+         try{
+           const {data,error}=await client.from('staff_applications')
+             .update({status:select.value,reviewed_by:user.id,reviewed_at:new Date().toISOString()})
+             .eq('id',a.id).select('id');
+           if(error)throw error;
+           if(!data?.length)throw Error('No application updated. Check recruitment reviewer permissions.');
+           setStatus(`Application for ${a.roblox} updated to ${select.value}.`);
+           await loadApplications();
+         }catch(err){setStatus('Unable to update application: '+(err.message||String(err)),true);save.disabled=false;}
+       });
+       const del=document.createElement('button');del.type='button';del.className='delete';del.textContent='Delete Application';
+        del.addEventListener('click',async()=>{
+          if(!confirm(`Permanently delete the application from ${a.roblox||'this applicant'} for ${a.position||'this position'}? This cannot be undone.`))return;
+          del.disabled=true;save.disabled=true;
+          try{
+            const {data,error}=await client.from('staff_applications').delete().eq('id',a.id).select('id');
+            if(error)throw error;
+            if(!data?.length)throw Error('No application deleted. Check the DELETE policy for staff_applications.');
+            await loadApplications();
+            setStatus(`Application from ${a.roblox||'applicant'} permanently deleted.`);
+          }catch(err){setStatus('Unable to delete application: '+(err.message||String(err)),true);del.disabled=false;save.disabled=false;}
+        });
+        controls.append(label,save,del);card.append(controls);applicationList.append(card);
+     }
+   }catch(err){
+     applicationStatus.textContent='Unable to load applications: '+(err.message||String(err));
+     applicationStatus.classList.add('error');
+   }finally{refreshApplications.disabled=false;}
+ }
+ refreshApplications.addEventListener('click',loadApplications);
+ applicationFilter.addEventListener('change',loadApplications);
+ await loadApplications();
+
+})();
+</script><script>
+(()=>{
+ const labels={broadcast:'Broadcast Management',bloxies:'The Bloxies — Awards Management',promotions:'Staff Promotions',decisions:'Executive Decisions',overview:'Overview',applications:'Applications',careers:'Careers & Positions',leadership:'Leadership Directory',shows:'Upcoming Shows',gallery:'Photo Gallery',points:'Activity Points',staff:'Staff Directory',scheduling:'Show Scheduling',discipline:'Disciplinary Actions',leave:'Leave Requests',records:'Schedules & Records',appeals:'Pending Appeals',history:'Appeal History'};
+ const views=[...document.querySelectorAll('.workspace-view')];
+ function activate(key){if(!labels[key]||(window.bloxtalkPortalAccess==='moderator'&&!['overview','applications','points','scheduling','discipline','leave','records','appeals','history'].includes(key)))key='overview';views.forEach(el=>el.classList.toggle('active',el.dataset.view===key));document.querySelectorAll('[data-target]').forEach(el=>{const active=el.dataset.target===key;el.classList.toggle('active',active);if(el.classList.contains('nav-item'))el.setAttribute('aria-current',active?'page':'false')});document.getElementById('workspaceTitle').textContent=labels[key];document.getElementById('workspaceSubtitle').textContent=key==='overview'?'Choose a category to manage BloxTalk operations.':'Manage '+labels[key].toLowerCase()+' in this dedicated workspace.';if(location.hash!=='#'+key)history.replaceState(null,'','#'+key);window.scrollTo({top:0,behavior:'smooth'});}
+ document.querySelectorAll('[data-target]').forEach(el=>el.addEventListener('click',()=>activate(el.dataset.target)));
+ window.addEventListener('hashchange',()=>activate(location.hash.slice(1)));
+ activate(location.hash.slice(1)||'overview');
+})();
+</script><script id="points-admin-script">(async()=>{
+  const $=id=>document.getElementById(id);
+  const url=window.BLOXTALK_SUPABASE_URL,key=window.BLOXTALK_SUPABASE_ANON_KEY;
+  if(!window.supabase||!url||!key)return;
+  const db=window.supabase.createClient(url,key);
+  const {data:{user},error:authError}=await db.auth.getUser();
+  if(authError||!user)return;
+  if(!window.bloxtalkAdminReady) await new Promise(resolve=>{const done=()=>{clearTimeout(timer);window.removeEventListener('bloxtalk-admin-ready',done);resolve();};const timer=setTimeout(done,30000);window.addEventListener('bloxtalk-admin-ready',done,{once:true});});
+  if(!window.bloxtalkAdminReady||!['admin','moderator'].includes(window.bloxtalkPortalAccess)){ $('adminPointsStatus').textContent='Authorization unavailable. Reload the portal.';return;}
+  const status=$('adminPointsStatus'),selector=$('pointsStaffSelect');
+  async function loadStaffOptions(){
+    const {data,error}=await db.from('staff_profiles').select('user_id,display_name').order('display_name');
+    if(error){status.textContent='Cannot load staff: '+error.message;return;}
+    const selected=selector.value;selector.replaceChildren(new Option('Select staff member',''));
+    (data||[]).forEach(p=>selector.add(new Option(p.display_name||p.user_id,p.user_id)));
+    selector.value=selected;
+    if(!data?.length)status.textContent='No staff visible. Check staff_profiles read permissions.';
+  }
+  let requestId=0;
+  async function loadSelected(){
+    const request=++requestId;
+    for(const field of ['adminLifetime','adminWeekly','adminRecognition'])$(field).textContent='—';
+    $('recognitionProgressFill').style.width='0%';$('recognitionProgressText').textContent='Select a staff member.';$('adminPointHistory').textContent='Select a staff member.';
+    const id=selector.value;if(!id){status.textContent='Select a staff member to view their points.';return;}
+    status.textContent='Loading points…';
+    const [totals,levels,awards]=await Promise.all([
+      db.rpc('bloxtalk_points_totals',{p_staff_id:id}),
+      db.from('staff_recognition_levels').select('label,minimum_points').order('minimum_points',{ascending:false}),
+      db.from('staff_point_transactions').select('id,points,category_code,reason,awarded_at,reversed_at').eq('staff_id',id).order('awarded_at',{ascending:false}).limit(30)
+    ]);
+    if(request!==requestId)return;
+    if(totals.error){status.textContent='Unable to load points: '+totals.error.message;return;}
+    const total=Array.isArray(totals.data)?totals.data[0]:totals.data;
+    if(!total||total.lifetime==null||total.weekly==null){status.textContent='Unexpected totals response. Check bloxtalk_points_totals return columns.';return;}
+    const lifetime=Number(total.lifetime);
+    $('adminLifetime').textContent=lifetime.toLocaleString();$('adminWeekly').textContent=Number(total.weekly).toLocaleString();
+    // Use live recognition thresholds when readable; the public tier thresholds
+    // provide a display fallback if RLS returns no rows to this administrator.
+    const fallbackLevels=[
+      {label:'Diamond Recognition',minimum_points:1000},
+      {label:'Platinum Recognition',minimum_points:500},
+      {label:'Gold Recognition',minimum_points:300},
+      {label:'Silver Recognition',minimum_points:150},
+      {label:'Bronze Recognition',minimum_points:50}
+    ];
+    const validLevels=(levels.data||[]).filter(r=>Number.isFinite(Number(r.minimum_points)) && r.label)
+      .map(r=>({label:r.label,minimum_points:Number(r.minimum_points)}))
+      .sort((a,b)=>b.minimum_points-a.minimum_points);
+    const tiers=validLevels.length?validLevels:fallbackLevels;
+    const current=tiers.find(r=>lifetime>=r.minimum_points);
+    const next=[...tiers].reverse().find(r=>r.minimum_points>lifetime);
+    $('adminRecognition').textContent=current?.label||'Not yet ranked';
+    const lower=current?.minimum_points||0;
+    const upper=next?.minimum_points||lower;
+    const percent=next?Math.max(0,Math.min(100,(lifetime-lower)/(upper-lower)*100)):100;
+    $('recognitionProgressFill').style.width=percent+'%';
+    $('recognitionProgressText').textContent=next
+      ?`${Math.max(0,next.minimum_points-lifetime).toLocaleString()} more points until ${next.label}`
+      :'Highest recognition level achieved';
+    if(!validLevels.length){
+      $('recognitionProgressText').textContent+=' · Displaying saved recognition thresholds';
+    }
+    const history=$('adminPointHistory');history.replaceChildren();
+    if(awards.error)history.textContent='Unable to load transactions: '+awards.error.message;
+    else if(!awards.data?.length)history.textContent='No awards recorded.';
+    else awards.data.forEach(a=>{const row=document.createElement('article');row.className='point-entry'+(a.reversed_at?' reversed':'');const label=document.createElement('strong');label.textContent=`#${a.id} · ${a.reversed_at?'REVERSED · ':''}+${a.points} · ${a.category_code}`;const meta=document.createElement('small');meta.textContent=(a.reason||'Activity award')+' · '+new Date(a.awarded_at).toLocaleString();row.append(label,meta);history.append(row)});
+    status.textContent='Showing live Supabase records.';
+  }
+  async function loadLeaderboard(){
+    const el=$('adminLeaderboard');el.textContent='Loading leaderboard…';
+    const {data,error}=await db.rpc('bloxtalk_points_leaderboard');
+    if(error){el.textContent='Unable to load leaderboard: '+error.message;return;}
+    el.replaceChildren();if(!data?.length){el.textContent='No weekly awards recorded.';return;}
+    data.forEach((r,i)=>{const row=document.createElement('div');row.className='point-entry';row.textContent=`${i+1}. ${r.display_name||'Staff'} — ${r.weekly_points} points`;el.appendChild(row)});
+  }
+  const customForm=$('customPointsForm'),customFeedback=$('customPointsFeedback'),awardButton=$('submitCustomPoints');
+  customForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    const staffId=selector.value;
+    const amount=Number($('customPointsAmount').value);
+    const reason=$('customPointsReason').value.trim();
+    if(!staffId){customFeedback.textContent='Select a staff member from the dropdown above.';selector.focus();return;}
+    if(!Number.isInteger(amount)||![5,10,15,20,25].includes(amount)){customFeedback.textContent='Choose 5, 10, 15, 20 or 25 points.';return;}
+    const identity=user.identities?.find(i=>i.provider==='discord');
+    const actorDiscordId=identity?.identity_data?.provider_id||identity?.identity_data?.sub||user.user_metadata?.provider_id||identity?.id;
+    if(!/^\d{17,20}$/.test(String(actorDiscordId||''))){customFeedback.textContent='Unable to identify your Discord account. Sign out and sign in through Discord again.';return;}
+    const selectedName=selector.options[selector.selectedIndex]?.text||'this staff member';
+    if(!confirm(`Award ${amount} point${amount===1?'':'s'} to ${selectedName}?${reason?'\nReason: '+reason:''}`))return;
+    awardButton.disabled=true;customFeedback.textContent='Submitting custom point award…';
+    try{
+      const {data,error}=await db.rpc('bloxtalk_custom_award_points',{
+        p_staff_id:staffId,p_points:amount,p_reason:reason||null,p_actor_discord_id:String(actorDiscordId)
+      });
+      if(error)throw error;
+      if(data?.error||data?.status==='error'||data?.success===false)throw Error(data.message||data.error||'Award was rejected.');
+      customFeedback.textContent=`Award request completed for ${selectedName}.`;
+      $('customPointsReason').value='';
+      await Promise.all([loadSelected(),loadLeaderboard()]);
+    }catch(error){customFeedback.textContent='Unable to award points: '+(error.message||String(error));}
+    finally{awardButton.disabled=false;}
+  });
+  selector.addEventListener('change',loadSelected);
+  $('refreshAdminPoints').addEventListener('click',async()=>{await loadStaffOptions();await Promise.all([loadSelected(),loadLeaderboard()])});
+  await loadStaffOptions();await loadLeaderboard();
+})();</script><script id="executive-registry-script">
+(async()=>{
+'use strict';
+const $=id=>document.getElementById(id),msg=$('registryMessage'),list=$('regList');
+const say=(s,err=false)=>{msg.textContent=s;msg.style.color=err?'#fda4af':'#a8bcd2'};
+const escapeDate=v=>v?new Date(v).toLocaleString():'—';
+if(!window.supabase||!window.BLOXTALK_SUPABASE_URL||!window.BLOXTALK_SUPABASE_ANON_KEY){say('Supabase configuration missing.',true);return}
+const db=window.supabase.createClient(window.BLOXTALK_SUPABASE_URL,window.BLOXTALK_SUPABASE_ANON_KEY);
+const {data:{user},error:authError}=await db.auth.getUser();if(authError||!user){say('Sign in through the Staff Portal.',true);return}
+const [member,owner]=await Promise.all([db.rpc('is_executive',{p_user:user.id}),db.rpc('is_registry_owner',{p_user:user.id})]);
+if(member.error||owner.error){say('Run executive-registry.sql in Supabase first. '+(member.error?.message||owner.error?.message),true);return}
+const isMember=member.data===true,isOwner=owner.data===true;
+if(!isMember&&!isOwner){say('Executive Registry access is restricted to authorized executive members.');return}
+if(isMember)$('registryCreate').classList.remove('hidden');
+const deadline=$('regDeadline');deadline.value=new Date(Date.now()+86400000-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+function elem(tag,text,cls){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(cls)x.className=cls;return x}
+function action(label,fn,cls){const b=elem('button',label,cls);b.type='button';b.addEventListener('click',async()=>{b.disabled=true;try{await fn()}catch(e){say(e.message||String(e),true)}finally{b.disabled=false}});return b}
+let records=[];
+async function load(){say('Loading decisions…');const [r,v,m]=await Promise.all([
+ db.from('executive_decisions').select('id,decision_number,title,category,description,created_at,created_by,voting_ends_at,status,finalized_at,announcement_sent_at').order('created_at',{ascending:false}).limit(500),
+ db.from('executive_votes').select('decision_id,voter_id,vote,voted_at'),db.from('executive_members').select('user_id')]);
+ if(r.error||v.error||m.error){say('Unable to load registry: '+(r.error||v.error||m.error).message,true);return}
+ records=r.data||[];const votes=v.data||[],memberCount=m.data?.length||0;
+ $('regStats').textContent=`${records.length} decisions · ${records.filter(x=>x.status==='pending').length} pending · ${records.filter(x=>x.status==='approved').length} approved · ${memberCount} eligible executives`;
+ list.replaceChildren();const term=$('regSearch').value.toLowerCase().trim(),filter=$('regFilter').value;
+ const shown=records.filter(r=>(!filter||r.status===filter)&&[r.decision_number,r.title,r.category,r.description,r.status].some(x=>String(x||'').toLowerCase().includes(term)));
+ if(!shown.length)list.append(elem('p','No matching decisions.','hint'));
+ for(const r of shown){const rv=votes.filter(v=>v.decision_id===r.id),own=rv.find(v=>v.voter_id===user.id);
+ const yes=rv.filter(v=>v.vote==='approve').length,no=rv.filter(v=>v.vote==='reject').length,abstain=rv.filter(v=>v.vote==='abstain').length;
+ const card=elem('article',undefined,'application-card');const top=elem('div',undefined,'application-top');top.append(elem('h3',`${r.decision_number} · ${r.title}`),elem('strong',r.status.toUpperCase()));card.append(top);
+ card.append(elem('p',`${r.category} · Submitted ${escapeDate(r.created_at)} · Voting closes ${escapeDate(r.voting_ends_at)}`,'hint'),elem('div',r.description,'application-answer'));
+ card.append(elem('p',`Approve: ${yes} · Reject: ${no} · Abstain: ${abstain} · Participation: ${rv.length}/${memberCount}`));
+ if(own)card.append(elem('p',`Your vote: ${own.vote.toUpperCase()} (${escapeDate(own.voted_at)})`,'hint'));
+ if(r.status==='pending'&&Date.now()<new Date(r.voting_ends_at).getTime()&&isMember&&!own){
+ for(const vote of ['approve','reject','abstain'])card.append(action(vote==='approve'?'Approve':vote==='reject'?'Reject':'Abstain',async()=>{
+ if(!confirm(`Submit ${vote.toUpperCase()} for ${r.decision_number}? Votes cannot be changed.`))return;
+ const {error}=await db.rpc('registry_cast_vote',{p_decision_id:r.id,p_vote:vote});if(error)throw error;say('Your vote was recorded.');await load();
+ },vote==='approve'?'approve':vote==='reject'?'deny':'secondary'));
+ }
+ if(r.status==='pending'&&isOwner){card.append(action('Finalize',async()=>{
+ if(!confirm(`Finalize ${r.decision_number}? This is permanent.`))return;
+ const {data,error}=await db.rpc('registry_finalize',{p_decision_id:r.id});if(error)throw error;
+ say(`Decision finalized as ${data.status}.`);await load();
+ },'secondary'));card.append(action('Withdraw',async()=>{
+ if(!confirm(`Withdraw ${r.decision_number}?`))return;
+ const {error}=await db.rpc('registry_withdraw',{p_decision_id:r.id});if(error)throw error;await load();
+ },'delete'))}
+ if(r.status==='approved'&&isOwner&&!r.announcement_sent_at){card.append(action('Publish to Discord',async()=>{
+ if(!confirm(`Publish ${r.decision_number} to Discord and notify the configured community role?`))return;
+ const {data,error}=await db.functions.invoke('registry-discord-announce',{body:{decision_id:r.id}});
+ if(error)throw error;if(!data?.ok)throw Error(data?.error||'Announcement failed');say('Discord announcement sent.');await load();
+ },'approve'))}
+ if(r.announcement_sent_at)card.append(elem('p','Discord announcement sent '+escapeDate(r.announcement_sent_at),'hint'));
+ list.append(card)
+ }
+ say('Registry loaded.');}
+ $('registryForm').addEventListener('submit',async e=>{e.preventDefault();const btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;try{
+ const {error}=await db.rpc('registry_create_proposal',{p_title:$('regTitle').value.trim(),p_category:$('regCategory').value,p_description:$('regDescription').value.trim(),p_ends_at:new Date(deadline.value).toISOString()});if(error)throw error;
+ e.currentTarget.reset();say('Proposal submitted.');await load();
+ }catch(err){say(err.message||String(err),true)}finally{btn.disabled=false}});
+ $('regSearch').addEventListener('input',()=>load());$('regFilter').addEventListener('change',load);$('regRefresh').addEventListener('click',load);
+ await load();
+})();
+</script><script id="promotions-script">(async()=>{
+const $=id=>document.getElementById(id), db=window.supabase.createClient(window.BLOXTALK_SUPABASE_URL,window.BLOXTALK_SUPABASE_ANON_KEY);
+const {data:{user}}=await db.auth.getUser(); if(!user)return;
+const {data:profile}=await db.from('staff_profiles').select('role').eq('user_id',user.id).maybeSingle();if(profile?.role!=='admin')return;
+let staff=[],editing=null;const say=t=>$('promoStatus').textContent=t;
+const check=r=>{if(r.error)throw r.error;return r.data};
+function reset(){editing=null;$('promoForm').reset();$('promoOld').value='';}
+function button(parent,label,fn){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=async()=>{b.disabled=true;try{await fn()}catch(e){say(e.message)}finally{b.disabled=false}};parent.append(b);}
+async function load(){try{staff=check(await db.from('staff_profiles').select('user_id,display_name,position').order('display_name'));const sel=$('promoStaff'),prev=sel.value;sel.replaceChildren(new Option('Select staff member',''));staff.forEach(s=>sel.add(new Option(s.display_name,s.user_id)));sel.value=prev;
+const rows=check(await db.from('staff_promotions').select('*').order('created_at',{ascending:false}));const list=$('promoList');list.replaceChildren();$('promoStats').replaceChildren();for(const status of ['Pending','Approved','Denied']){const a=document.createElement('article');a.textContent=status+': '+rows.filter(r=>r.status===status).length;$('promoStats').append(a)}
+for(const r of rows.filter(r=>!$('promoFilter').value||r.status===$('promoFilter').value)){const a=document.createElement('article');a.className='point-entry';const name=id=>staff.find(s=>s.user_id===id)?.display_name||id||'—';const h=document.createElement('h3');h.textContent=name(r.staff_id)+' — '+r.status;a.append(h);const p=document.createElement('p');p.style.whiteSpace='pre-wrap';p.textContent=`${r.old_position||'Unassigned'} → ${r.new_position}\nDepartment: ${r.old_department||'—'} → ${r.new_department||'—'}\nEffective: ${r.effective_date}\nReason: ${r.reason}\nSubmitted by: ${name(r.created_by)}\nReviewed by: ${name(r.reviewed_by)}\n${r.applied_at?'Directory position updated':'Directory position not updated'}`;a.append(p);
+if(r.status==='Pending'){button(a,'Edit',()=>{editing=r.id;for(const [id,v] of Object.entries({promoStaff:r.staff_id,promoOld:r.old_position,promoNew:r.new_position,promoOldDept:r.old_department,promoNewDept:r.new_department,promoReason:r.reason,promoDate:r.effective_date}))$(id).value=v||'';$('promoForm').scrollIntoView()});for(const status of ['Approved','Denied'])button(a,status==='Approved'?'Approve':'Deny',async()=>{if(!confirm(status+' this request?'))return;const data=check(await db.from('staff_promotions').update({status,reviewed_by:user.id,reviewed_at:new Date().toISOString()}).eq('id',r.id).eq('status','Pending').select('id'));if(!data.length)throw Error('Record already reviewed');await load()});}
+if(r.status==='Approved'&&!r.applied_at)button(a,'Apply Position Change',async()=>{if(!confirm('Update the Staff Directory position?'))return;check(await db.rpc('apply_staff_promotion',{p_id:r.id}));await load()});
+if(!r.applied_at)button(a,'Delete',async()=>{if(!confirm('Permanently delete this record?'))return;check(await db.from('staff_promotions').delete().eq('id',r.id).is('applied_at',null));await load()});list.append(a)}say(rows.length+' promotion records loaded.');}catch(e){say(e.message)}}
+$('promoStaff').onchange=()=>{$('promoOld').value=staff.find(s=>s.user_id===$('promoStaff').value)?.position||''};$('promoCancel').onclick=reset;$('promoRefresh').onclick=load;$('promoFilter').onchange=load;
+$('promoForm').onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{const row={staff_id:$('promoStaff').value,old_position:$('promoOld').value,new_position:$('promoNew').value.trim(),old_department:$('promoOldDept').value,new_department:$('promoNewDept').value,reason:$('promoReason').value.trim(),effective_date:$('promoDate').value};if(!row.new_position||!row.reason)throw Error('Position and reason are required');if(editing){const d=check(await db.from('staff_promotions').update(row).eq('id',editing).eq('status','Pending').select('id'));if(!d.length)throw Error('Request no longer pending')}else check(await db.from('staff_promotions').insert(row));reset();await load()}catch(e){say(e.message)}finally{b.disabled=false}};await load();
+})();</script>
+<script id="bloxies-script">(async()=>{
+const $=id=>document.getElementById(id); if(!window.supabase)return;
+const db=window.supabase.createClient(window.BLOXTALK_SUPABASE_URL,window.BLOXTALK_SUPABASE_ANON_KEY);
+const {data:{user}}=await db.auth.getUser();if(!user)return;
+const {data:profile}=await db.from('staff_profiles').select('role').eq('user_id',user.id).maybeSingle();if(profile?.role!=='admin')return;
+let rows=[], selected=new Set(), questions=new Map(), aliases=new Map();
+const normalizeAlias=v=>v.trim().replace(/\s+/g,' ').toLowerCase();
+async function loadAliases(){let all=[];for(let i=0;;i+=500){const {data,error}=await db.from('bloxies_aliases').select('alias_key,public_name').order('alias_key').range(i,i+499);if(error)throw error;all.push(...data);if(data.length<500)break}aliases=new Map(all.map(a=>[a.alias_key,a.public_name]));$('bxAliasList').replaceChildren();for(const [key,name] of aliases){const line=el('div','','record');line.append(el('span',key+' → '+name+' '));const b=el('button','Remove alias','delete');b.onclick=async()=>{if(!confirm('Remove this alias? Historical totals will be recalculated.'))return;const {error}=await db.from('bloxies_aliases').delete().eq('alias_key',key);if(error){$('bxAliasStatus').textContent=error.message;return}await load()};line.append(b);$('bxAliasList').append(line)}}
+$('bxAliasForm').onsubmit=async e=>{e.preventDefault();try{const name=$('bxAliasName').value.trim();const keys=[...new Set([name,...$('bxAliasValues').value.split(/\r?\n/)].map(normalizeAlias).filter(Boolean))];if(!name||!keys.length)throw Error('Enter a nominee and aliases.');await loadAliases();if(keys.some(k=>aliases.has(k)&&aliases.get(k)!==name))throw Error('Alias already belongs to another public name. Remove the conflicting mapping first.');const fresh=keys.filter(k=>!aliases.has(k));if(fresh.length){const {error}=await db.from('bloxies_aliases').insert(fresh.map(alias_key=>({alias_key,public_name:name})));if(error)throw error} $('bxAliasStatus').textContent='Aliases saved.';e.target.reset();await load()}catch(err){$('bxAliasStatus').textContent=err.message}};
+
+let publicReady=false;
+async function loadPublicSettings(){const {data,error}=await db.from('bloxies_public_settings').select('enabled,question_ids').eq('id',1).single();if(error){$('bxPublicMessage').textContent=error.message;return}selected=new Set(data.question_ids);$('bxPublicEnabled').checked=data.enabled;publicReady=true;$('bxPublicSave').disabled=false;}
+$('bxPublicSave').onclick=async()=>{if(!publicReady)return;const enabled=$('bxPublicEnabled').checked;if(enabled&&!selected.size){$('bxPublicMessage').textContent='Select at least one award question.';return}if(enabled&&!confirm('Publish the selected award questions and nominee answer text to everyone? Check that no private information is included.'))return;const btn=$('bxPublicSave');btn.disabled=true;try{const {data,error}=await db.from('bloxies_public_settings').update({enabled,question_ids:[...selected]}).eq('id',1).select('id');if(error)throw error;if(!data?.length)throw Error('Settings not saved. Check permissions.');$('bxPublicMessage').textContent=enabled?'Public standings enabled.':'Public standings hidden.'}catch(e){$('bxPublicMessage').textContent=e.message}finally{btn.disabled=false}};
+
+function el(tag,t,cls){const x=document.createElement(tag);x.textContent=t;if(cls)x.className=cls;return x}
+function render(){const valid=rows.filter(r=>!r.invalid);const counts=new Map();let total=0;for(const r of valid)for(const a of r.answers){if(!selected.has(a.id))continue;for(const raw of new Set(a.values.map(normalizeAlias).filter(Boolean).map(v=>aliases.get(v)||v))){if(!counts.has(a.id))counts.set(a.id,new Map());const m=counts.get(a.id);m.set(raw,(m.get(raw)||0)+1);total++}}
+$('bxStats').replaceChildren(...[['Submissions',rows.length],['Valid submissions',valid.length],['Counted nominations',total],['Award questions',selected.size]].map(([k,v])=>{const a=el('article','');a.append(el('span',k),el('strong',v));return a}));$('bxTally').replaceChildren();for(const [id,m] of counts){const a=el('article','','content-item');a.append(el('h3',questions.get(id)));for(const [n,c] of [...m].sort((a,b)=>b[1]-a[1]))a.append(el('p',n+' — '+c+' votes'));$('bxTally').append(a)}if(!counts.size)$('bxTally').textContent='Select award questions to count.';
+$('bxRecords').replaceChildren();const q=$('bxSearch').value.toLowerCase();for(const r of rows.filter(r=>JSON.stringify(r).toLowerCase().includes(q))){const a=el('article','','content-item');a.append(el('strong',new Date(r.submitted_at).toLocaleString()+(r.invalid?' · INVALID':'')));for(const v of r.answers)a.append(el('p',v.title+': '+v.values.join(', ')));const b=el('button',r.invalid?'Restore vote':'Invalidate vote');b.onclick=async()=>{if(!confirm('Change validity of this submission?'))return;b.disabled=true;const {error}=await db.from('bloxies_nominations').update({invalid:!r.invalid}).eq('response_id',r.response_id);if(error){$('bxStatus').textContent=error.message;b.disabled=false}else await load()};a.append(b);const del=el('button','Delete Vote','delete');del.type='button';del.onclick=async()=>{if(!confirm('Delete this entire nomination submission from the website and vote totals? This cannot be restored from the Admin Panel.'))return;del.disabled=true;b.disabled=true;try{const {data,error}=await db.from('bloxies_nominations').update({deleted_at:new Date().toISOString(),invalid:true}).eq('response_id',r.response_id).is('deleted_at',null).select('response_id');if(error)throw error;if(!data?.length)throw Error('No vote deleted. Check permissions or refresh.');await load()}catch(e){$('bxStatus').textContent=e.message;del.disabled=false;b.disabled=false}};a.append(del);$('bxRecords').append(a)}}
+async function load(){ $('bxStatus').textContent='Loading…';try{await loadAliases();if(!publicReady)await loadPublicSettings();let all=[];for(let i=0;;i+=500){const {data,error}=await db.from('bloxies_nominations').select('*').is('deleted_at',null).order('submitted_at',{ascending:false}).order('response_id').range(i,i+499);if(error)throw error;all.push(...data);if(data.length<500)break}rows=all;questions=new Map();for(const r of rows)for(const a of r.answers)questions.set(a.id,a.title);$('bxQuestions').replaceChildren();for(const [id,title] of questions){const l=el('label','');const c=document.createElement('input');c.type='checkbox';c.style.width='auto';c.checked=selected.has(id);c.onchange=()=>{c.checked?selected.add(id):selected.delete(id);render()};l.append(c,document.createTextNode(' '+title));$('bxQuestions').append(l)}render();$('bxStatus').textContent='Results loaded.'}catch(e){$('bxStatus').textContent=e.message}}
+$('bxRefresh').onclick=load;$('bxSearch').oninput=render;$('bxExport').onclick=()=>{const csv=v=>'"'+String(v).replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const lines=[['Response ID','Submitted','Invalid','Question','Answer'],...rows.flatMap(r=>r.answers.flatMap(a=>a.values.map(v=>[r.response_id,r.submitted_at,r.invalid,a.title,v])))];const u=URL.createObjectURL(new Blob([lines.map(l=>l.map(csv).join(',')).join('\n')],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download='bloxies-nominations.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};document.querySelectorAll('[data-target="bloxies"]').forEach(b=>b.addEventListener('click',load));if(location.hash==='#bloxies')load();})();</script><script>setTimeout(()=>location.reload(), 12*60*1000);</script><script>(()=>{const $=id=>document.getElementById(id);function videoId(raw){const s=String(raw||'').trim();if(/^[A-Za-z0-9_-]{11}$/.test(s))return s;try{const u=new URL(s);if(u.protocol!=='https:')return '';let v='';if(u.hostname==='youtu.be')v=u.pathname.split('/')[1];else if(['youtube.com','www.youtube.com','m.youtube.com'].includes(u.hostname))v=u.searchParams.get('v')||(/^\/(live|embed|shorts)\//.test(u.pathname)?u.pathname.split('/')[2]:'');return /^[A-Za-z0-9_-]{11}$/.test(v||'')?v:''}catch{return ''}}let replays=[],loaded=false;const feedback=s=>$('btFeedback').textContent=s;function render(){const list=$('btAdminReplays');list.replaceChildren();replays.forEach((r,i)=>{const row=document.createElement('div');row.className='record';row.textContent=r.title+' · '+r.video_id+' ';const b=document.createElement('button');b.type='button';b.className='delete';b.textContent='Remove';b.onclick=()=>{replays.splice(i,1);render()};row.append(b);list.append(row)})}async function load(){if(window.bloxtalkPortalAccess!=='admin')return;try{const {data,error}=await client.from('broadcast_settings').select('*').eq('id',1).single();if(error)throw error;$('btEnabled').checked=data.enabled;$('btStatus').value=data.status;$('btTitle').value=data.title;$('btDescription').value=data.description;$('btVideo').value=data.video_id||'';const d=new Date(data.starts_at);$('btStart').value=data.starts_at?new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16):'';replays=data.replays||[];render();loaded=true;$('btSave').disabled=false;feedback('Settings loaded.')}catch(e){feedback(e.message)}}const client=window.supabase.createClient(window.BLOXTALK_SUPABASE_URL,window.BLOXTALK_SUPABASE_ANON_KEY);document.querySelectorAll('[data-target="broadcast"]').forEach(b=>b.addEventListener('click',()=>{if(!loaded)load()}));$('btReload').onclick=load;$('btAddReplay').onclick=()=>{const title=$('btReplayTitle').value.trim(),id=videoId($('btReplayUrl').value);if(!title||!id)return feedback('Enter a title and valid YouTube video URL.');if(replays.length>=50)return feedback('Maximum 50 recordings.');if(replays.some(r=>r.video_id===id))return feedback('Recording already exists.');replays.push({title,video_id:id});render();$('btReplayTitle').value='';$('btReplayUrl').value='';feedback('Recording added. Save to publish.')};$('btBroadcastForm').onsubmit=async e=>{e.preventDefault();if(!loaded||window.bloxtalkPortalAccess!=='admin')return;const raw=$('btVideo').value.trim(),id=videoId(raw),status=$('btStatus').value,start=$('btStart').value;if((raw&&!id)||(status==='live'&&!id))return feedback('Enter a valid YouTube video URL or ID.');if(status==='scheduled'&&!start)return feedback('Choose a scheduled start.');$('btSave').disabled=true;try{const {data:v,error:ve}=await client.functions.invoke('verify-discord-staff');if(ve||!v?.verified||v.access!=='admin')throw Error('Executive access could not be verified.');const {data,error}=await client.from('broadcast_settings').update({enabled:$('btEnabled').checked,status,title:$('btTitle').value.trim(),description:$('btDescription').value,video_id:id||null,starts_at:start?new Date(start).toISOString():null,replays}).eq('id',1).select('id').single();if(error||!data)throw error||Error('Save denied');feedback('Broadcast settings published.')}catch(e){feedback(e.message)}finally{$('btSave').disabled=false}};const observer=new MutationObserver(()=>{if(!$('dashboard').classList.contains('hidden')&&location.hash==='#broadcast'&&!loaded)load()});observer.observe($('dashboard'),{attributes:true,attributeFilter:['class']})})();</script></body></html>
